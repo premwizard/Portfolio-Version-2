@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Default dark mode colors */
+  :root {
+    color-scheme: dark;
+    
+    /* Dark Mode Colors */
+    --color-background: #080507;
+    --color-surface: #0d0a08;
+    --color-border: #d4967a18;
+    --color-primary: #d4967a;
+    --color-secondary: #b8ccd8;
+    --color-warm: #c8845e;
+    --color-text-primary: #b8ccd8;
+    --color-text-secondary: rgba(184,204,216,0.8);
+    --color-text-muted: #444;
+    
+    /* Short variable aliases for components */
+    --bg: var(--color-background);
+    --surf: var(--color-surface);
+    --surf2: #120e0b;
+    --acc: var(--color-primary);
+    --acc2: var(--color-warm);
+    --pt: var(--color-secondary);
+    --tx: #b8ccd8;
+    --txs: rgba(184,204,216,0.8);
+    --txm: var(--color-text-muted);
+    --border: rgba(212, 150, 122, 0.1);
+    --border2: rgba(212, 150, 122, 0.2);
+    --tx-on-acc: var(--color-background);
+  }
+
+  /* Light Mode Colors */
+  [data-theme="light"] {
+    color-scheme: light;
+    
+    --color-background: #faf6f0;
+    --color-surface: #f0e8dc;
+    --color-border: #c8845e25;
+    --color-primary: #b5622a;
+    --color-secondary: #4a7a8a;
+    --color-warm: #9a5235;
+    --color-text-primary: #1a0e0a;
+    --color-text-secondary: #5a4035;
+    --color-text-muted: #9a8070;
+    
+    /* Short variable aliases for components */
+    --bg: var(--color-background);
+    --surf: var(--color-surface);
+    --surf2: #f5e8db;
+    --acc: var(--color-primary);
+    --acc2: var(--color-warm);
+    --pt: var(--color-secondary);
+    --tx: var(--color-text-primary);
+    --txs: var(--color-text-secondary);
+    --txm: var(--color-text-muted);
+    --border: rgba(181, 98, 42, 0.1);
+    --border2: rgba(181, 98, 42, 0.2);
+    --tx-on-acc: var(--color-background);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    html.custom-cursor-on,
+    html.custom-cursor-on * {
+      cursor: none !important;
+    }
+  }
+
+  body {
+    @apply bg-background font-sans antialiased overflow-x-hidden;
+    margin: 0;
+    padding: 0;
+    color: #b8ccd8;
+    background-color: var(--color-background);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  *,
+  *::before,
+  *::after {
+    color: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span {
+    color: inherit;
+  }
+
+  input,
+  textarea {
+    color: #b8ccd8;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgba(184, 204, 216, 0.5);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 150, 122, 0.45);
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(212, 150, 122, 0.5);
+  }
+  
+  .glass-card {
+    background-color: color-mix(in srgb, var(--color-surface) 5%, transparent);
+    backdrop-filter: blur(1rem);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Smooth transitions for all color-related properties */
+  .transition-theme {
+    @apply transition-colors duration-300;
+  }
+
+  /* Custom Scrollbar for a luxurious feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+    transition: background-color 0.3s ease;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-warm);
+  }
+}
+
+/* Subtle noise texture */
+.noise-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Rose Gold Sparkle Burst (custom cursor trail) */
+.spark {
+  position: fixed;
+  z-index: 10001;
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 4px rgba(252, 232, 224, 0.35);
+  animation: sparkle-out 0.7s ease-out forwards;
+}
+
+@keyframes sparkle-out {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0) translate(var(--tx), var(--ty));
+    opacity: 0;
+  }
+}
