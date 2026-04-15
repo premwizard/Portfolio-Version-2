@@ -1,4 +1,4 @@
-# Iron Crown Portfolio - Rose Gold Edition
+# Portfolio - Rose Gold Edition
 
 A premium, production-ready personal portfolio website built with React.js and Vite, showcasing a luxurious "Iron Crown – Rose Gold Edition" theme with advanced animations and responsive design.
 
