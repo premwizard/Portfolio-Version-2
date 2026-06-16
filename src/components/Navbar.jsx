@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { label: 'Skills', sectionId: 'skills-carousel', href: '#skills-carousel' },
   { label: 'Certificates', sectionId: 'certificates', href: '#certificates' },
   { label: 'Projects', sectionId: 'projects', href: '#projects' },
+  { label: "Testimonials",sectionId: "testimonials", href:"#testimonials"},
   { label: 'Contact', sectionId: 'contact', href: '#contact' },
 ];
 
