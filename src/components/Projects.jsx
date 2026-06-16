@@ -124,7 +124,7 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="py-24 px-6 relative z-10 overflow-hidden bg-[var(--bg)]">
+    <section id="projects" className="py-24 px-6 relative z-10 overflow-hidden bg-transparent">
       <div className="absolute left-1/2 top-10 h-24 w-24 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
       <div className="max-w-7xl mx-auto">
         <motion.div

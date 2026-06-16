@@ -5,21 +5,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 const experienceData = [
   {
     id: 1,
-    title: 'Web Development Intern',
+    title: 'Full Stack Developer Intern',
+    organization: 'Zidio Development',
+    duration: 'Apr 2026 – Present',
+    description: 'Developing and maintaining modern web applications with a focus on performance, responsiveness, and clean user experience. Contributing to real-world projects using current web technologies.',
+    isCurrent: true,
+  },
+  {
+    id: 2,
+    title: 'Web Development Intern (Online)',
     organization: 'Zidio Development',
     duration: 'Mar 2026 – Present',
     description: 'Developing and maintaining modern web applications with a focus on performance, responsiveness, and clean user experience. Contributing to real-world projects using current web technologies.',
     isCurrent: true,
   },
   {
-    id: 2,
+    id: 3,
     title: 'Full Stack Python Developer Intern',
     organization: 'Code Infinite Technology, Coimbatore',
     duration: 'Jun 2025',
     description: 'Worked on end-to-end web application development using Python, Django, SQL, and modern frontend technologies. Gained hands-on experience in building scalable and user-focused applications.',
   },
   {
-    id: 3,
+    id: 4,
     title: 'Machine Learning Intern',
     organization: 'EMGLITZ Technologies, Coimbatore',
     duration: 'Dec 2024 – Jan 2025',
@@ -57,9 +65,8 @@ const BookPage = ({ title, items, isLeft, currentPage }) => {
 
   return (
     <motion.div
-      className={`relative h-full w-full bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm border-r border-primary/20 ${
-        isLeft ? 'rounded-l-2xl' : 'rounded-r-2xl'
-      }`}
+      className={`relative h-full w-full bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm border-r border-primary/20 ${isLeft ? 'rounded-l-2xl' : 'rounded-r-2xl'
+        }`}
       initial={{ rotateY: isLeft ? -90 : 90, opacity: 0 }}
       animate={{ rotateY: 0, opacity: 1 }}
       exit={{ rotateY: isLeft ? -90 : 90, opacity: 0 }}
@@ -156,9 +163,8 @@ const NavigationButtons = ({ currentChapter, totalChapters, onPrev, onNext }) =>
       {Array.from({ length: totalChapters }, (_, i) => (
         <div
           key={i}
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            i + 1 === currentChapter ? 'bg-primary shadow-lg shadow-primary/50' : 'bg-primary/30'
-          }`}
+          className={`w-2 h-2 rounded-full transition-all duration-300 ${i + 1 === currentChapter ? 'bg-primary shadow-lg shadow-primary/50' : 'bg-primary/30'
+            }`}
         />
       ))}
     </div>
@@ -235,7 +241,7 @@ const Journey = () => {
           <h2 className="text-4xl md:text-6xl font-bold mb-4">
             My{' '}
             <span className="font-serif italic text-primary text-glow">
-               Journey
+              Journey
             </span>
           </h2>
           <div className="mx-auto h-[1px] w-32 bg-primary mb-4" />

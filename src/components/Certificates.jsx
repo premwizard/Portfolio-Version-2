@@ -616,7 +616,7 @@ const Certificates = () => {
   return (
     <section
       id="certificates"
-      className="relative z-10 overflow-hidden bg-[var(--bg)] py-20 px-4 sm:px-6 lg:py-24"
+      className="relative z-10 overflow-hidden bg-transparent py-20 px-4 sm:px-6 lg:py-24"
     >
       <div className="pointer-events-none absolute inset-0 opacity-[0.07]">
         <Crown className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 text-platinum" />

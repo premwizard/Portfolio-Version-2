@@ -9,6 +9,7 @@ import SkillsCarousel from './components/SkillsCarousel';
 import Certificates from './components/Certificates';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
+import Testimonials from './components/Testimonials';
 import ParticleBackground from './components/ParticleBackground';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
@@ -61,6 +62,7 @@ function App() {
               <SkillsCarousel />
               <Certificates />
               <Projects />
+              <Testimonials />
               <Contact />
             </main>
 

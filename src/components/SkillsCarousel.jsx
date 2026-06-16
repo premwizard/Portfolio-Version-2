@@ -8,6 +8,18 @@ import {
   SiMongodb, SiMysql, SiSqlite, SiFirebase,
   SiGithub, SiPycharm, SiSpyderide, SiAndroidstudio, 
   SiCanva, SiFigma, SiLangchain,
+  SiTypescript,
+  SiNextdotjs,
+  SiPostgresql,
+  SiNginx,
+  SiClockify,
+  SiSocketdotio,
+  SiJsonwebtokens,
+  SiPinetwork,
+  SiApachekafka,
+  SiSupabase,
+  SiRedux,
+  SiPostman
 } from "react-icons/si";
 
 import { FaAws, FaChartLine, FaCss3Alt } from "react-icons/fa";
@@ -23,7 +35,10 @@ const skills = [
   { name: "HTML5", icon: SiHtml5 },
   { name: "CSS3", icon: FaCss3Alt },
   { name: "JavaScript", icon: SiJavascript },
+  { name: "TypeScript", icon:SiTypescript},
   { name: "React.js", icon: SiReact },
+  { name: "Redux.js", icon: SiRedux},
+  { name: "Next.js", icon: SiNextdotjs},
   { name: "Node.js", icon: SiNodedotjs },
   { name: "Tailwind CSS", icon: SiTailwindcss },
   { name: "Bootstrap 5", icon: SiBootstrap },
@@ -31,7 +46,6 @@ const skills = [
   { name: "Django", icon: SiDjango },
   { name: "Flask", icon: SiFlask },
   { name: "Python", icon: SiPython },
-  { name: "Jupyter Notebook", icon: SiJupyter },
   { name: "NumPy", icon: SiNumpy },
   { name: "Pandas", icon: SiPandas },
   { name: "Matplotlib", icon: FaChartLine },
@@ -40,23 +54,24 @@ const skills = [
   { name: "Ollama", icon: SiOllama },
   { name: "Langchain", icon: SiLangchain },
   { name: "MongoDB", icon: SiMongodb },
+  { name: "PostgreSQL", icon: SiPostgresql},
   { name: "MySQL", icon: SiMysql },
   { name: "SQLite", icon: SiSqlite },
   { name: "Firebase", icon: SiFirebase },
+  { name: "Supabase", icon: SiSupabase },
   { name: "AWS", icon: FaAws },
   { name: "Azure", icon: VscAzure },
   { name: "GCP", icon: MdCloud },
+  { name: "Socket.io", icon: SiSocketdotio},
+  { name: "JWT", icon: SiJsonwebtokens}, 
+  { name: "Nginx", icon: SiNginx },
   { name: "Git & GitHub", icon: SiGithub },
-  { name: "VS Code", icon: VscVscode },
-  { name: "PyCharm", icon: SiPycharm },
-  { name: "Spyder IDE", icon: SiSpyderide },
-  { name: "Thonny", icon: SiPython },
+  { name: "Postman", icon:SiPostman},
   { name: "Canva", icon: SiCanva },
   { name: "Figma", icon: SiFigma },
   { name: "FlutterFlow", icon: Camera },
   { name: "Power BI", icon: BiBarChartAlt2 },
   { name: "Tableau", icon: BiChart },
-  { name: "Microsoft 365", icon: TfiMicrosoftAlt },
 ];
 
 const SkillsCarousel = () => {
@@ -76,12 +91,9 @@ const SkillsCarousel = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16 transition-colors duration-300"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 transition-colors duration-300">
-                      <h2 className="text-3xl md:text-5xl font-bold mb-4 text-platinum">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-platinum transition-colors duration-300">
             Skills <span className="text-primary italic font-serif text-glow">& Technologies</span>
           </h2>
-          </h2>
-          <div className="h-[1px] w-24 bg-primary mx-auto transition-colors duration-300"></div>
         </motion.div>
 
         <AnimatePresence mode="wait">
