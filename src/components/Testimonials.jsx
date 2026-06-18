@@ -112,7 +112,7 @@ const Testimonials = () => {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section className="py-20 px-4 md:px-8 max-w-7xl mx-auto" style={{ backgroundColor: 'var(--bg, #080507)', color: 'var(--tx, #f0ece8)' }}>
+    <section id="testimonials" className="py-20 px-4 md:px-8 max-w-7xl mx-auto relative z-10" style={{ backgroundColor: 'transparent', color: 'var(--tx, #f0ece8)' }}>
       
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--acc, #d4967a)' }}>Testimonials </h2>

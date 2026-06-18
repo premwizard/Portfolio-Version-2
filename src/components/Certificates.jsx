@@ -390,44 +390,7 @@ const PIECE_GLYPH = {
   pawn: '♙',
 };
 
-const LEGEND = [
-  {
-    piece: 'king',
-    glyph: '♔',
-    label: 'King',
-    role: 'Highest-level certification & core expertise',
-  },
-  {
-    piece: 'queen',
-    glyph: '♕',
-    label: 'Queen',
-    role: 'Major certifications & flagship credentials',
-  },
-  {
-    piece: 'rook',
-    glyph: '♖',
-    label: 'Rook',
-    role: 'Backend, data & infrastructure strength',
-  },
-  {
-    piece: 'bishop',
-    glyph: '♗',
-    label: 'Bishop',
-    role: 'Design, UX & visual systems',
-  },
-  {
-    piece: 'knight',
-    glyph: '♘',
-    label: 'Knight',
-    role: 'Special skills & distinctive expertise',
-  },
-  {
-    piece: 'pawn',
-    glyph: '♙',
-    label: 'Pawn',
-    role: 'Tools, platforms & everyday craft',
-  },
-];
+
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -712,42 +675,7 @@ const Certificates = () => {
               </div>
             </div>
 
-            {/* Legend */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-              className="rounded-2xl border border-[var(--acc)]/15 bg-[var(--surf)]/80 p-4 backdrop-blur-md sm:p-6"
-            >
-              <div className="mb-4 flex items-start justify-between gap-2">
-                <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--acc)]">
-                  Royal legend
-                </h3>
-                <span className="rounded-lg bg-[var(--acc)]/10 px-3 py-1 text-xs font-semibold text-[var(--acc)]">
-                  {certificatesWithTiers.length} of {CERTIFICATE_PIECES.length} pieces
-                </span>
-              </div>
-              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                {LEGEND.map((row) => (
-                  <li
-                    key={row.piece}
-                    className="flex items-start gap-3 rounded-xl border border-platinum/5 bg-[var(--bg)]/60 px-3 py-2.5"
-                  >
-                    <span
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--acc)]/25 bg-[var(--surf2)] text-xl text-[var(--acc)]"
-                      aria-hidden
-                    >
-                      {row.glyph}
-                    </span>
-                    <div>
-                      <p className="font-semibold text-[var(--tx)]">{row.label}</p>
-                      <p className="text-sm text-[var(--pt)]/70">{row.role}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+ 
           </div>
 
           {/* Desktop sidebar */}
