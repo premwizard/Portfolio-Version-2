@@ -22,7 +22,10 @@ import LoadingScreen from './components/LoadingScreen';
 import Review from './pages/Review';
 import AdminTestimonials from './pages/AdminTestimonials';
 
-const Portfolio = () => (
+// Utils
+import { incrementVisitorCount } from './utils/visitorCounter';
+
+const Portfolio = ({ visitorCount }) => (
   <>
     <Navbar />
     <main>
@@ -53,6 +56,24 @@ const Portfolio = () => (
             <p className="text-[var(--acc)] text-sm">
               Released under the MIT License · Built with React & Tailwind CSS
             </p>
+
+            {/* Live Visitor Counter */}
+            {visitorCount !== null && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mt-6 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[var(--acc)]/5 border border-[var(--acc)]/20 shadow-[0_0_15px_rgba(212,150,122,0.1)] text-[var(--acc)] backdrop-blur-sm"
+              >
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--acc)] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--acc)]"></span>
+                </span>
+                <span className="text-sm font-semibold tracking-wide">
+                  {visitorCount.toLocaleString()}+ Visitors
+                </span>
+              </motion.div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -81,6 +102,7 @@ const Portfolio = () => (
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [visitorCount, setVisitorCount] = useState(null);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -94,6 +116,14 @@ function App() {
       top: 0,
       behavior: "instant"
     });
+
+    const initVisitorCount = async () => {
+      const count = await incrementVisitorCount();
+      if (count !== null) {
+        setVisitorCount(count);
+      }
+    };
+    initVisitorCount();
   }, []);
 
   return (
@@ -120,7 +150,7 @@ function App() {
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
           >
             <Routes>
-              <Route path="/" element={<Portfolio />} />
+              <Route path="/" element={<Portfolio visitorCount={visitorCount} />} />
               <Route path="/review" element={<Review />} />
               <Route path="/admin/testimonials" element={<AdminTestimonials />} />
             </Routes>

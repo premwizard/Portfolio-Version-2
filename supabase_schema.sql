@@ -30,3 +30,31 @@ CREATE POLICY "Enable full access for admins" ON testimonials
   FOR ALL
   USING (true)
   WITH CHECK (true);
+
+
+-- ==========================================
+-- VISITOR COUNTER
+-- ==========================================
+
+-- Create the portfolio_stats table
+CREATE TABLE portfolio_stats (
+  id int PRIMARY KEY,
+  visits int DEFAULT 0
+);
+
+-- Insert initial row
+INSERT INTO portfolio_stats (id, visits) VALUES (1, 0);
+
+-- Enable RLS
+ALTER TABLE portfolio_stats ENABLE ROW LEVEL SECURITY;
+
+-- 4. Policy: Anyone can read portfolio_stats
+CREATE POLICY "Enable read access for stats" ON portfolio_stats
+  FOR SELECT
+  USING (true);
+
+-- 5. Policy: Anyone can update portfolio_stats
+CREATE POLICY "Enable update access for stats" ON portfolio_stats
+  FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
