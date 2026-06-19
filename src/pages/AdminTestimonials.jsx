@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabase';
+import { getVisitorCount } from '../utils/visitorCounter';
 import { FiCheck, FiX, FiTrash2, FiSearch, FiRefreshCw } from 'react-icons/fi';
 
 const AdminTestimonials = () => {
@@ -12,6 +13,7 @@ const AdminTestimonials = () => {
   const [activeTab, setActiveTab] = useState('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [visitorCount, setVisitorCount] = useState(null);
 
   const fetchTestimonials = async () => {
     try {
@@ -23,6 +25,11 @@ const AdminTestimonials = () => {
 
       if (error) throw error;
       setTestimonials(data);
+
+      const visits = await getVisitorCount();
+      if (visits !== null) {
+        setVisitorCount(visits);
+      }
     } catch (error) {
       toast.error('Failed to load testimonials');
       console.error(error);
@@ -117,9 +124,10 @@ const AdminTestimonials = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           {[
-            { label: 'Total', value: stats.total, color: 'text-blue-400' },
+            { label: 'Total Visits', value: visitorCount !== null ? visitorCount : '-', color: 'text-purple-400' },
+            { label: 'Reviews', value: stats.total, color: 'text-blue-400' },
             { label: 'Pending', value: stats.pending, color: 'text-yellow-400' },
             { label: 'Approved', value: stats.approved, color: 'text-green-400' },
             { label: 'Rejected', value: stats.rejected, color: 'text-red-400' },
