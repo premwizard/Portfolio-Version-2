@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { supabase } from '../lib/supabase';
 import { FaQuoteLeft, FaStar } from 'react-icons/fa';
 
 const Testimonials = () => {
@@ -12,9 +12,14 @@ const Testimonials = () => {
 
   const fetchTestimonials = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
-      const res = await axios.get(`${API_URL}/api/testimonials`);
-      setTestimonials(res.data);
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTestimonials(data);
     } catch (error) {
       console.error('Failed to load testimonials', error);
     } finally {

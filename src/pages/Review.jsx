@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { supabase } from '../lib/supabase';
 
 const Review = () => {
   const navigate = useNavigate();
@@ -24,8 +24,18 @@ const Review = () => {
     setIsSubmitting(true);
     
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
-      await axios.post(`${API_URL}/api/testimonials`, formData);
+      const { error } = await supabase.from('testimonials').insert([{
+        name: formData.name,
+        role: formData.role,
+        company: formData.company,
+        feedback: formData.feedback,
+        linkedin: formData.linkedin,
+        rating: 5,
+        status: 'pending'
+      }]);
+
+      if (error) throw error;
+
       toast.success('Thank you! Your testimonial has been submitted and is pending review.');
       setFormData({ name: '', role: '', company: '', feedback: '', linkedin: '' });
       setTimeout(() => {

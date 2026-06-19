@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { supabase } from '../lib/supabase';
 import { FiCheck, FiX, FiTrash2, FiSearch, FiRefreshCw } from 'react-icons/fi';
 
 const AdminTestimonials = () => {
@@ -16,9 +16,13 @@ const AdminTestimonials = () => {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
-      const res = await axios.get(`${API_URL}/api/admin/testimonials`);
-      setTestimonials(res.data);
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTestimonials(data);
     } catch (error) {
       toast.error('Failed to load testimonials');
       console.error(error);
@@ -33,10 +37,15 @@ const AdminTestimonials = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
-      await axios.patch(`${API_URL}/api/admin/testimonials/${id}`, { status: newStatus });
+      const { error } = await supabase
+        .from('testimonials')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
       toast.success(`Testimonial marked as ${newStatus}`);
-      setTestimonials(testimonials.map(t => t._id === id ? { ...t, status: newStatus } : t));
+      setTestimonials(testimonials.map(t => t.id === id ? { ...t, status: newStatus } : t));
     } catch (error) {
       toast.error(`Failed to update status`);
     }
@@ -45,10 +54,15 @@ const AdminTestimonials = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
-        await axios.delete(`${API_URL}/api/admin/testimonials/${id}`);
+        const { error } = await supabase
+          .from('testimonials')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+
         toast.success('Testimonial deleted');
-        setTestimonials(testimonials.filter(t => t._id !== id));
+        setTestimonials(testimonials.filter(t => t.id !== id));
       } catch (error) {
         toast.error('Failed to delete testimonial');
       }
@@ -168,7 +182,7 @@ const AdminTestimonials = () => {
             <AnimatePresence>
               {filteredTestimonials.map(t => (
                 <motion.div 
-                  key={t._id}
+                  key={t.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
@@ -196,7 +210,7 @@ const AdminTestimonials = () => {
                   <div className="flex gap-2 mt-auto pt-4 border-t border-white/5">
                     {t.status !== 'approved' && (
                       <button 
-                        onClick={() => handleStatusChange(t._id, 'approved')}
+                        onClick={() => handleStatusChange(t.id, 'approved')}
                         className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors text-sm font-medium border border-green-500/20"
                       >
                         <FiCheck /> Approve
@@ -204,14 +218,14 @@ const AdminTestimonials = () => {
                     )}
                     {t.status !== 'rejected' && (
                       <button 
-                        onClick={() => handleStatusChange(t._id, 'rejected')}
+                        onClick={() => handleStatusChange(t.id, 'rejected')}
                         className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-sm font-medium border border-red-500/20"
                       >
                         <FiX /> Reject
                       </button>
                     )}
                     <button 
-                      onClick={() => handleDelete(t._id)}
+                      onClick={() => handleDelete(t.id)}
                       className="w-12 flex items-center justify-center py-2 rounded-lg bg-white/5 text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-colors border border-white/10 hover:border-red-500/20"
                     >
                       <FiTrash2 />
