@@ -12,7 +12,8 @@ const Testimonials = () => {
 
   const fetchTestimonials = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/testimonials');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+      const res = await axios.get(`${API_URL}/api/testimonials`);
       setTestimonials(res.data);
     } catch (error) {
       console.error('Failed to load testimonials', error);

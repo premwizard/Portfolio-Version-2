@@ -24,7 +24,8 @@ const Review = () => {
     setIsSubmitting(true);
     
     try {
-      await axios.post('http://localhost:5000/api/testimonials', formData);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+      await axios.post(`${API_URL}/api/testimonials`, formData);
       toast.success('Thank you! Your testimonial has been submitted and is pending review.');
       setFormData({ name: '', role: '', company: '', feedback: '', linkedin: '' });
       setTimeout(() => {

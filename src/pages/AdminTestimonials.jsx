@@ -16,7 +16,8 @@ const AdminTestimonials = () => {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/testimonials');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+      const res = await axios.get(`${API_URL}/api/admin/testimonials`);
       setTestimonials(res.data);
     } catch (error) {
       toast.error('Failed to load testimonials');
@@ -32,7 +33,8 @@ const AdminTestimonials = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/testimonials/${id}`, { status: newStatus });
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+      await axios.patch(`${API_URL}/api/admin/testimonials/${id}`, { status: newStatus });
       toast.success(`Testimonial marked as ${newStatus}`);
       setTestimonials(testimonials.map(t => t._id === id ? { ...t, status: newStatus } : t));
     } catch (error) {
@@ -43,7 +45,8 @@ const AdminTestimonials = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/admin/testimonials/${id}`);
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+        await axios.delete(`${API_URL}/api/admin/testimonials/${id}`);
         toast.success('Testimonial deleted');
         setTestimonials(testimonials.filter(t => t._id !== id));
       } catch (error) {
