@@ -15,6 +15,8 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Testimonials from './components/Testimonials';
 import ParticleBackground from './components/ParticleBackground';
+import ThreeLightning from './components/effects/ThreeLightning';
+import AudioToggle from './components/AudioToggle';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
 
@@ -133,6 +135,8 @@ function App() {
       <CustomCursor />
       <div className="noise-bg"></div>
       <ParticleBackground />
+      <ThreeLightning />
+      <AudioToggle />
 
       <AnimatePresence mode="wait">
         {isLoading ? (

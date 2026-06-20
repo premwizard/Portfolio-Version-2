@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
+
+const BuilderUniverse = lazy(() => import('./hero3d/BuilderUniverse'));
 
 const ROLES = [
   'AI Product Engineer',
@@ -59,103 +61,114 @@ const Hero = () => {
       <div className="pointer-events-none absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-primary/10 blur-[120px] transition-colors duration-300" />
       <div className="pointer-events-none absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-secondary/10 blur-[120px] transition-colors duration-300" />
 
-      <div className="relative z-10 mx-auto max-w-3xl text-center sm:max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="mb-4 block text-xs font-medium uppercase tracking-widest text-primary sm:text-sm">
-            Welcome to my world
-          </span>
-          <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="text-transparent bg-gradient-to-r from-primary via-warm to-platinum bg-clip-text text-glow">
-              {displayText}
+      <div className="relative z-10 mx-auto w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Left Column: Text & CTA */}
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left order-2 lg:order-1 mt-8 lg:mt-0">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full"
+          >
+            <span className="mb-4 block text-xs font-medium uppercase tracking-widest text-primary sm:text-sm">
+              Welcome to my world
             </span>
-            <span className="animate-pulse text-primary">|</span>
-          </h1>
-        </motion.div>
+            <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              <span className="text-transparent bg-gradient-to-r from-primary via-warm to-platinum bg-clip-text text-glow">
+                {displayText}
+              </span>
+              <span className="animate-pulse text-primary">|</span>
+            </h1>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mx-auto mb-10 flex flex-nowrap items-center justify-center gap-2 text-lg font-light md:text-xl transition-colors duration-300"
-          style={{ lineHeight: 1 }}
-        >
-          <span className="shrink-0" style={{ lineHeight: 1, color: 'var(--txs)' }}>
-            I am a
-          </span>
-          <span
-            className="m-0 max-w-full p-0"
-            style={{
-              height: '1.4em',
-              overflow: 'hidden',
-              display: 'inline-flex',
-              alignItems: 'center',
-              lineHeight: 1,
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-10 flex flex-nowrap items-center justify-center lg:justify-start gap-2 text-lg font-light md:text-xl transition-colors duration-300 w-full"
+            style={{ lineHeight: 1 }}
           >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={ROLES[roleIndex]}
-                className="whitespace-nowrap"
-                style={{
-                  position: 'relative',
-                  display: 'inline-block',
-                  color: 'var(--acc)',
-                  lineHeight: 1,
-                  transition: 'color 0.3s ease',
-                }}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-              >
-                {ROLES[roleIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
-        >
-          <a
-            href="#projects"
-            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 font-semibold text-background transition-all duration-300 hover:shadow-[0_0_20px_var(--border2)] sm:w-auto"
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              View Projects{' '}
-              <ArrowRight
-                size={18}
-                className="transition-transform group-hover:translate-x-1"
-              />
+            <span className="shrink-0" style={{ lineHeight: 1, color: 'var(--txs)' }}>
+              I am a
             </span>
-          </a>
-          <a
-            href="#contact"
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 sm:w-auto"
-            style={{
-              borderColor: 'var(--border)',
-              border: '1px solid var(--border)',
-              color: 'var(--tx)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--acc)';
-              e.currentTarget.style.color = 'var(--tx-on-acc)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = 'var(--tx)';
-            }}
+            <span
+              className="m-0 max-w-full p-0"
+              style={{
+                height: '1.4em',
+                overflow: 'hidden',
+                display: 'inline-flex',
+                alignItems: 'center',
+                lineHeight: 1,
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={ROLES[roleIndex]}
+                  className="whitespace-nowrap"
+                  style={{
+                    position: 'relative',
+                    display: 'inline-block',
+                    color: 'var(--acc)',
+                    lineHeight: 1,
+                    transition: 'color 0.3s ease',
+                  }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  {ROLES[roleIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col w-full sm:w-auto items-center justify-center lg:justify-start gap-4 sm:flex-row sm:gap-6"
           >
-            Contact Me <Download size={18} />
-          </a>
-        </motion.div>
+            <a
+              href="#projects"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 font-semibold text-background transition-all duration-300 hover:shadow-[0_0_20px_var(--border2)] sm:w-auto"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                View Projects{' '}
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </span>
+            </a>
+            <a
+              href="#contact"
+              className="flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 sm:w-auto"
+              style={{
+                borderColor: 'var(--border)',
+                border: '1px solid var(--border)',
+                color: 'var(--tx)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--acc)';
+                e.currentTarget.style.color = 'var(--tx-on-acc)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--tx)';
+              }}
+            >
+              Contact Me <Download size={18} />
+            </a>
+          </motion.div>
+        </div>
+
+        {/* Right Column: 3D Universe */}
+        <div className="relative w-full flex justify-center items-center order-1 lg:order-2 h-[50vh] lg:h-[80vh]">
+          <Suspense fallback={<div className="animate-pulse text-primary tracking-widest uppercase text-sm">Initializing System...</div>}>
+            <BuilderUniverse />
+          </Suspense>
+        </div>
       </div>
 
       <motion.div
