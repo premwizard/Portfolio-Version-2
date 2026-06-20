@@ -5,27 +5,48 @@ import { GitBranch, Sparkles, Terminal, AlertTriangle } from 'lucide-react';
 const projects = [
   {
     id: 1,
-    title: 'MediSync360',
-    description: 'An integrated healthcare ecosystem designed to manage patient records, provide intelligent health insights, and streamline communication between users and healthcare services.',
-    tags: ['React.js', 'Flask', 'MongoDB', 'AI Integration'],
+    title: 'MediSync360 — AI Powered Healthcare Ecosystem',
+    description: ' Built a scalable AI-powered healthcare ecosystem integrating 10+ healthcare modules including patient monitoring, wearable analytics, workforce management, and medical interoperability using React.js, Node.js, Flask, and MongoDB. Implemented multimodal AI workflows supporting text, image, and voice-based symptom analysis with AI-driven recommendation systems, reducing manual preliminary health analysis effort through centralized digital healthcare workflows. Developed real-time monitoring pipelines and predictive healthcare analytics using WebSockets, NLP workflows, and intelligent processing systems for continuous patient activity tracking and healthcare insights.',
+    tags: ['React.js', 'Flask', 'MongoDB', 'TensorFlow', 'Tailwind CSS', 'WebSockets', 'NLP', 'Ollama'],
     category: 'Healthcare Platform'
-  },
+  },  
   {
     id: 2,
-    title: 'AI-Based Multi Services Healthcare',
-    description: 'Developed a healthcare platform offering personalized nutrition guidance, health record management, and multi-service integration for improved patient care.',
-    tags: ['Python', 'Flask', 'React.js', 'Ollama', 'NLP'],
-    category: 'AI Healthcare System'
+    title: 'Automated Individual Daily Work Reporting System',
+    description: 'Developed an automated employee activity tracking platform integrating GitHub Webhooks, Google Sheets, PostgreSQL,and WhatsApp automation workflows. Built centralized automation pipelines for real-time activity monitoring and scheduled reporting, reducing manual reporting effort by 3+ hours weekly.',
+    tags: ['React.js', ' Node.js', ' Express.js', ' PostgreSQL', ' GitHub Webhooks', ' Google Apps Script', ' WhatsApp Web.js'  ],
+    category: 'AI Automation'
   },
   {
     id: 3,
-    title: 'AI Dietitian System',
-    description: 'An AI-powered dietitian system that analyzes user inputs to generate personalized nutrition advice and meal plans for a healthier lifestyle.',
-    tags: ['Python', 'Flask', 'React.js', 'Ollama'],
+    title: 'Text-to-Design AI Platform',
+    description: 'Developed an AI-powered platform that converts natural language prompts into responsive UI layouts and reusable frontend components using Generative AI workflows. Integrated intelligent prompt-processing and dynamic rendering pipelines, reducing prompt-to-prototype UI generation time by approximately 60% for rapid frontend development workflows.',
+    tags: ['React.js','Tailwind CSS', 'Node.js', 'Express.js', 'Gemini API', 'Generative AI'],
     category: 'AI Assistant'
   },
   {
-    id: 4,
+   id:4,
+   title:'AI Job Finder',
+   description:'An automated job finder that searches for AI/ML/Software Engineering roles across various job boards (Wellfound, Greenhouse, Lever) and sends a daily HTML email summary.',
+   tags:['Next.js','Python','Fastapi','GitHub Actions','Email Automation'],
+   category:'AI Automation'  
+  },
+  {
+    id:5,
+    title: 'Wearable AI Health Monitoring System',
+    description:"Developed a real-time wearable health monitoring platform tracking heart rate, SpO2, activity levels, and health trends through AI-powered analytics dashboards. Built continuous health monitoring pipelines with sub-second dashboard updates and intelligent health insight generation across multiple test sessions using Flask, MongoDB, REST APIs, and visualization systems.",
+    tags:['React.js', 'Flask', 'MongoDB', 'Recharts', 'Python', 'REST APIs' ],
+    category:'Health Tech Platform'
+  },
+  {
+   id:6,
+   title:'AI Expense Tracker',
+   description:'A modern, production-ready finance dashboard built with React, Vite, Tailwind CSS, Supabase Auth, Express, and PostgreSQL. Premium dashboard UI with responsive layouts and motion effects Supabase authentication and PostgreSQL-ready backend architecture Expense, income, budget, analytics, AI advisor, reports, and notifications. Mobile-friendly, dark/light theme support, and performance-aware routing.',
+   tags: ['React.js', 'Vite', 'Tailwind CSS', 'Supabase Auth', 'Express', 'PostgreSQL'],
+   category: 'AI Assistant'
+  },
+  {
+    id: 7,
     title: 'Smart LMS  System',
     description: 'A full-stack management system designed for handling operations like user management, orders, and analytics (adaptable for LMS or restaurant management).',
     tags: ['React.js', 'Flask', 'MongoDB', 'Express'],
@@ -34,24 +55,24 @@ const projects = [
 ];
 
 const promptMap = {
-ai: {
-user: 'Show AI projects',
-ai: 'Analyzing portfolio... AI-driven healthcare systems detected. Displaying the most impactful solution.',
-pick: 1,
-witty: 'AI + healthcare is where real impact happens. This system reflects that vision.'
-},
-healthcare: {
-user: 'Show healthcare systems',
-ai: 'Healthcare-focused architecture identified. Presenting a multi-service intelligent platform.',
-pick: 2,
-witty: 'Built to solve real-world healthcare problems with scalable AI systems.'
-},
-surprise: {
-user: 'Show a random project',
-ai: 'Selecting a project at random from the system repository.',
-pick: null,
-witty: 'Every system here is built with purpose. This one stands out in its own way.'
-}
+  ai: {
+    user: 'Show AI projects',
+    ai: 'Analyzing portfolio... AI architectures detected. Displaying a relevant AI solution.',
+    categories: ['AI Automation', 'AI Assistant'],
+    witty: 'AI is where real impact happens. This system reflects that vision.'
+  },
+  healthcare: {
+    user: 'Show healthcare systems',
+    ai: 'Healthcare-focused architecture identified. Presenting a multi-service intelligent platform.',
+    categories: ['Healthcare Platform', 'Health Tech Platform'],
+    witty: 'Built to solve real-world healthcare problems with scalable technology.'
+  },
+  surprise: {
+    user: 'Show a random project',
+    ai: 'Selecting a project at random from the system repository.',
+    categories: null,
+    witty: 'Every system here is built with purpose. This one stands out in its own way.'
+  }
 };
 
 const Projects = () => {
@@ -103,8 +124,17 @@ const Projects = () => {
     const prompt = promptMap[key];
     appendLine({ role: 'user', text: prompt.user });
     appendLine({ role: 'ai', text: '...' });
-    const projectId = key === 'surprise' ? Math.floor(Math.random() * projects.length) + 1 : prompt.pick;
-    const project = projects.find((item) => item.id === projectId) || projects[0];
+    
+    let project;
+    if (prompt.categories) {
+      const matchingProjects = projects.filter((item) => prompt.categories.includes(item.category));
+      project = matchingProjects.length > 0 
+        ? matchingProjects[Math.floor(Math.random() * matchingProjects.length)] 
+        : projects[0];
+    } else {
+      project = projects[Math.floor(Math.random() * projects.length)] || projects[0];
+    }
+    
     setSelectedProject(project);
     setWitty(prompt.witty);
 
@@ -124,9 +154,9 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="py-24 px-6 relative z-10 overflow-hidden bg-transparent">
+    <section id="projects" className="py-24 relative z-10 overflow-hidden bg-transparent">
       <div className="absolute left-1/2 top-10 h-24 w-24 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -263,39 +293,46 @@ const Projects = () => {
               )}
             </div>
 
-            {showAll && (
-              <div className="rounded-[32px] border border-platinum/10 bg-[var(--surf)]/90 p-6 shadow-[0_35px_80px_rgba(0,0,0,0.35)]">
-                <div className="mb-6 flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-primary/80">
-                  <Sparkles size={18} /> Full project repository
-                </div>
-                <div className="grid gap-6 md:grid-cols-2">
-                  {projects.map((project) => (
-                    <article key={project.id} className="rounded-[28px] border border-platinum/10 bg-[var(--bg)]/80 p-5 transition-all duration-300 hover:border-primary/30 hover:bg-[var(--surf)]/90">
-                      <div className="flex items-center justify-between gap-4">
-                        <div>
-                          <h4 className="text-xl font-semibold">{project.title}</h4>
-                          <p className="mt-2 text-xs uppercase tracking-[0.35em] text-platinum/70">{project.category}</p>
-                        </div>
-                        <div className="rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-primary">{project.tags.length} tags</div>
-                      </div>
-                      <p className="mt-4 text-sm leading-7 text-platinum/70">{project.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
-                          <span key={tag} className="rounded-full border border-primary/20 bg-[var(--surf)]/80 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-platinum/70">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            )}
           </motion.div>
         </div>
       </div>
+
+      {showAll && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-16 w-full border-y border-platinum/10 bg-[var(--surf)]/90 px-6 sm:px-12 py-12 shadow-[0_35px_80px_rgba(0,0,0,0.35)]"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8 flex items-center gap-3 text-sm uppercase tracking-[0.35em] text-primary/80">
+              <Sparkles size={18} /> Full project repository
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project) => (
+                <article key={project.id} className="flex flex-col rounded-[28px] border border-platinum/10 bg-[var(--bg)]/80 p-5 transition-all duration-300 hover:border-primary/30 hover:bg-[var(--surf)]/90">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h4 className="text-xl font-semibold">{project.title}</h4>
+                      <p className="mt-2 text-xs uppercase tracking-[0.35em] text-platinum/70">{project.category}</p>
+                    </div>
+                    <div className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-primary">{project.tags.length} tags</div>
+                  </div>
+                  <p className="mt-4 text-sm leading-7 text-platinum/70 grow">{project.description}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <span key={tag} className="rounded-full border border-primary/20 bg-[var(--surf)]/80 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-platinum/70">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };
