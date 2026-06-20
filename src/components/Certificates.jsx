@@ -394,6 +394,14 @@ const PIECE_GLYPH = {
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
+const LEGEND = [
+  { piece: 'king', label: 'King Tier' },
+  { piece: 'queen', label: 'Queen Tier' },
+  { piece: 'rook', label: 'Rook Tier' },
+  { piece: 'bishop', label: 'Bishop Tier' },
+  { piece: 'knight', label: 'Knight Tier' },
+  { piece: 'pawn', label: 'Pawn Tier' },
+];
 function pieceAt(piecesBySquare, file, rank) {
   return piecesBySquare[`${file}-${rank}`] ?? null;
 }
