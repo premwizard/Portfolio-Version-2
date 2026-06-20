@@ -3,7 +3,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 
 import CoreOrb from './CoreOrb';
-import OrbitNodes from './OrbitNodes';
 import Lighting from './Lighting';
 import Effects from './Effects';
 
@@ -27,12 +26,16 @@ const ParallaxGroup = ({ children }) => {
 
 const BuilderUniverse = () => {
   return (
-    <div className="w-full h-[60vh] lg:h-full min-h-[400px] relative cursor-crosshair">
+    <div className="w-full h-full min-h-screen relative">
       <Canvas
-        camera={{ position: [0, 2, 14], fov: 45 }}
+        camera={{ position: [0, 0, 14], fov: 45 }}
         gl={{ antialias: false, alpha: true }} // Antialias false is good for bloom performance
         dpr={[1, 2]} // Cap pixel ratio for performance
       >
+        {/* Layer 1: Cinematic Background & Fog */}
+        <color attach="background" args={['#080507']} />
+        <fog attach="fog" args={['#080507', 10, 30]} />
+
         <Suspense fallback={null}>
           <Lighting />
           
@@ -44,7 +47,6 @@ const BuilderUniverse = () => {
               floatingRange={[-0.2, 0.2]}
             >
               <CoreOrb />
-              <OrbitNodes />
             </Float>
           </ParallaxGroup>
           

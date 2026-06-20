@@ -18,17 +18,36 @@ const Hero = () => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i < fullText.length) {
-        setDisplayText(fullText.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 150);
+    let currentText = '';
+    let isDeleting = false;
+    let timer;
 
-    return () => clearInterval(timer);
+    const loopTyping = () => {
+      if (!isDeleting && currentText === fullText) {
+        timer = setTimeout(() => {
+          isDeleting = true;
+          loopTyping();
+        }, 3000); // Wait 3 seconds before erasing
+      } else if (isDeleting && currentText === '') {
+        timer = setTimeout(() => {
+          isDeleting = false;
+          loopTyping();
+        }, 800); // Wait a bit before typing again
+      } else {
+        currentText = isDeleting 
+          ? fullText.slice(0, currentText.length - 1)
+          : fullText.slice(0, currentText.length + 1);
+          
+        setDisplayText(currentText);
+        
+        const speed = isDeleting ? 75 : 150 + Math.random() * 100;
+        timer = setTimeout(loopTyping, speed);
+      }
+    };
+
+    timer = setTimeout(loopTyping, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -61,9 +80,16 @@ const Hero = () => {
       <div className="pointer-events-none absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-primary/10 blur-[120px] transition-colors duration-300" />
       <div className="pointer-events-none absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-secondary/10 blur-[120px] transition-colors duration-300" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Left Column: Text & CTA */}
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left order-2 lg:order-1 mt-8 lg:mt-0">
+      {/* Full Screen Cinematic 3D Background */}
+      <div className="absolute inset-0 z-0">
+        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-primary tracking-widest uppercase text-sm animate-pulse">Initializing Environment...</div>}>
+          <BuilderUniverse />
+        </Suspense>
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl flex flex-col justify-center min-h-[80vh] pointer-events-none">
+        {/* Content Wrapper */}
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left mt-8 lg:mt-0 pointer-events-auto max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +100,7 @@ const Hero = () => {
               Welcome to my world
             </span>
             <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              <span className="text-transparent bg-gradient-to-r from-primary via-warm to-platinum bg-clip-text text-glow">
+              <span className="text-transparent bg-gradient-to-r from-primary via-warm to-platinum bg-clip-text text-glow drop-shadow-2xl">
                 {displayText}
               </span>
               <span className="animate-pulse text-primary">|</span>
@@ -104,7 +130,7 @@ const Hero = () => {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={ROLES[roleIndex]}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap font-medium"
                   style={{
                     position: 'relative',
                     display: 'inline-block',
@@ -131,7 +157,7 @@ const Hero = () => {
           >
             <a
               href="#projects"
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 font-semibold text-background transition-all duration-300 hover:shadow-[0_0_20px_var(--border2)] sm:w-auto"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-8 py-4 font-semibold text-background transition-all duration-300 hover:shadow-[0_0_30px_var(--border2)] sm:w-auto"
             >
               <span className="relative z-10 flex items-center gap-2">
                 View Projects{' '}
@@ -143,7 +169,7 @@ const Hero = () => {
             </a>
             <a
               href="#contact"
-              className="flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 transition-all duration-300 sm:w-auto bg-surface/30 backdrop-blur-md"
               style={{
                 borderColor: 'var(--border)',
                 border: '1px solid var(--border)',
@@ -161,13 +187,6 @@ const Hero = () => {
               Contact Me <Download size={18} />
             </a>
           </motion.div>
-        </div>
-
-        {/* Right Column: 3D Universe */}
-        <div className="relative w-full flex justify-center items-center order-1 lg:order-2 h-[50vh] lg:h-[80vh]">
-          <Suspense fallback={<div className="animate-pulse text-primary tracking-widest uppercase text-sm">Initializing System...</div>}>
-            <BuilderUniverse />
-          </Suspense>
         </div>
       </div>
 

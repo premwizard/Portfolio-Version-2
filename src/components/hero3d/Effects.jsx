@@ -5,9 +5,9 @@ const Effects = () => {
   return (
     <EffectComposer disableNormalPass>
       <Bloom 
-        luminanceThreshold={0.5} // High threshold so only emissive things bloom
+        luminanceThreshold={0.4} // Lowered to allow reflections to glow softly
         luminanceSmoothing={0.9} 
-        intensity={1.2} 
+        intensity={1.5} 
         mipmapBlur 
       />
       <Vignette 

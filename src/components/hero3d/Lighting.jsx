@@ -1,10 +1,14 @@
 import React from 'react';
+import { Environment } from '@react-three/drei';
 
 const Lighting = () => {
   return (
     <>
-      {/* Soft ambient lighting for base visibility */}
-      <ambientLight intensity={0.2} color="#f0ece8" />
+      {/* Soft ambient lighting for base visibility - kept low for high contrast cinematic look */}
+      <ambientLight intensity={0.1} color="#f0ece8" />
+      
+      {/* Environment map for premium glassmorphism reflections */}
+      <Environment preset="city" />
       
       {/* Main spotlight highlighting the core from top left */}
       <spotLight
