@@ -3,12 +3,13 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-// Recursively generate branching lightning paths
+// -------------------------------------------------------------
+// CORE GENERATION
+// -------------------------------------------------------------
 const generateBranchingSegments = (start, end, maxGenerations, maxOffset) => {
   const buildBranch = (pStart, pEnd, depth, offsetScale) => {
     if (depth > maxGenerations) return [];
     
-    // 1. Midpoint displacement
     let points = [pStart, pEnd];
     let currentOffset = offsetScale;
     const displacementGens = 5; 
@@ -41,12 +42,9 @@ const generateBranchingSegments = (start, end, maxGenerations, maxOffset) => {
       });
     }
     
-    // 2. Child branches
     if (depth < maxGenerations) {
-      // 2-4 child branches, mostly in lower half
       const numChildren = Math.floor(Math.random() * 3) + 2; 
       for (let k = 0; k < numChildren; k++) {
-        // Weighted towards end of branch (e.g. 0.4 to 0.9)
         const t = 0.4 + Math.random() * 0.5;
         const randIndex = Math.floor(points.length * t);
         if (randIndex >= points.length - 1) continue;
@@ -54,28 +52,23 @@ const generateBranchingSegments = (start, end, maxGenerations, maxOffset) => {
         const spawnPoint = points[randIndex];
         const dir = new THREE.Vector3().subVectors(points[randIndex+1], points[randIndex]).normalize();
         
-        // Random angle offset (15-45 degrees)
         const angle = (15 + Math.random() * 30) * (Math.PI / 180);
-        // Random axis
         const axis = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5);
-        if (axis.lengthSq() === 0) axis.set(0, 1, 0); // Guard against NaN
+        if (axis.lengthSq() === 0) axis.set(0, 1, 0);
         axis.normalize();
         
         if (dir.lengthSq() > 0) {
           dir.normalize();
           dir.applyAxisAngle(axis, angle);
         } else {
-          dir.copy(axis); // Fallback if points were identical
+          dir.copy(axis);
         }
         
-        // Child length 60-80% of remaining parent length
         const remainingLength = pEnd.distanceTo(spawnPoint);
         const childLength = remainingLength * (0.6 + Math.random() * 0.2);
         const childEnd = spawnPoint.clone().add(dir.multiplyScalar(childLength));
         
-        // 30% chance for sub-branch if depth allows, otherwise force cap
         const nextDepth = (Math.random() < 0.3 || depth === 0) ? depth + 1 : maxGenerations + 1;
-        
         const childSegments = buildBranch(spawnPoint, childEnd, nextDepth, offsetScale * 0.7);
         branchSegments = branchSegments.concat(childSegments);
       }
@@ -85,29 +78,95 @@ const generateBranchingSegments = (start, end, maxGenerations, maxOffset) => {
   };
   
   const allSegments = buildBranch(start, end, 0, maxOffset);
-  
-  // Sort by Y descending so drawing from top to bottom works progressively
   allSegments.sort((a, b) => b.p1.y - a.p1.y);
   return allSegments;
 };
 
-// Global ref for syncing bloom intensity
+// -------------------------------------------------------------
+// GLOBAL STATE
+// -------------------------------------------------------------
 const activePeakStrikes = { current: 0 };
-// Global ref for ambient flash
 const ambientFlashState = { current: 0 };
+
+// -------------------------------------------------------------
+// COMPONENTS
+// -------------------------------------------------------------
+const CameraRecovery = () => {
+  const { camera } = useThree();
+  const targetCameraPos = useRef(new THREE.Vector3(0, 0, 5));
+
+  useFrame(() => {
+    try {
+      if (!camera) return;
+      camera.position.lerp(targetCameraPos.current, 0.1);
+    } catch (err) {
+      console.error("Crash source CameraRecovery:", { message: err.message, stack: err.stack });
+    }
+  });
+
+  return null;
+};
+
+const WebGLRecovery = () => {
+  const { gl } = useThree();
+  useEffect(() => {
+    const handleContextLost = (e) => {
+      e.preventDefault();
+      console.warn("WebGL Context Lost");
+    };
+    const handleContextRestored = () => {
+      console.warn("WebGL Context Restored");
+    };
+    gl.domElement.addEventListener('webglcontextlost', handleContextLost);
+    gl.domElement.addEventListener('webglcontextrestored', handleContextRestored);
+    return () => {
+      gl.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      gl.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
+      gl.dispose();
+    };
+  }, [gl]);
+  return null;
+};
+
+const PostFX = () => {
+  const [intensity, setIntensity] = useState(2.0);
+  
+  useFrame(() => {
+    try {
+      const targetIntensity = activePeakStrikes.current > 0 ? 4.5 : 2.0;
+      // Guarded setState to prevent infinite re-renders
+      if (Math.abs(targetIntensity - intensity) > 0.05) {
+        setIntensity(prev => prev + (targetIntensity - prev) * 0.2);
+      }
+    } catch (err) {
+      console.error("Crash source PostFX:", { message: err.message, stack: err.stack });
+    }
+  });
+
+  return (
+    <EffectComposer>
+      <Bloom 
+        luminanceThreshold={0.4} 
+        luminanceSmoothing={0.9} 
+        intensity={intensity} 
+        mipmapBlur 
+      />
+    </EffectComposer>
+  );
+};
 
 const Bolt = ({ onComplete, colorHex, isLightMode }) => {
   const { viewport, camera } = useThree();
   const materialRef = useRef();
   const geometryRef = useRef();
   
-  const phaseRef = useRef('drawing'); // drawing -> hold -> fading
+  const phaseRef = useRef('drawing'); 
   const timeRef = useRef(0);
   const totalSegmentsRef = useRef(0);
-  
-  // Audio played flag to prevent multiple triggers per bolt
   const hasPlayedAudio = useRef(false);
-  // Intensity modifier for light mode visibility
+  const geomInstanceRef = useRef();
+  const isCompleteRef = useRef(false); // Lock for onComplete
+  
   const intensityBoost = isLightMode ? 3.0 : 1.0; 
   
   const geometry = useMemo(() => {
@@ -130,16 +189,13 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
     
     const positions = new Float32Array(segments.length * 6);
     const colors = new Float32Array(segments.length * 6);
-    
     const baseColor = new THREE.Color(colorHex);
-    // Base emissive multiplier
     const emMult = 5.0 * intensityBoost; 
 
     segments.forEach((seg, i) => {
       positions[i*6]   = seg.p1.x; positions[i*6+1] = seg.p1.y; positions[i*6+2] = seg.p1.z;
       positions[i*6+3] = seg.p2.x; positions[i*6+4] = seg.p2.y; positions[i*6+5] = seg.p2.z;
       
-      // Taper brightness based on branch depth
       const dimFactor = Math.pow(0.5, seg.depth); 
       
       colors[i*6]   = baseColor.r * emMult * dimFactor;
@@ -150,84 +206,98 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
       colors[i*6+5] = baseColor.b * emMult * dimFactor;
     });
     
+    if (geomInstanceRef.current) geomInstanceRef.current.dispose();
+    
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    
-    // Start with drawing nothing
     geom.setDrawRange(0, 0);
+    
+    geomInstanceRef.current = geom;
     return geom;
   }, [viewport, colorHex, intensityBoost]);
 
   useEffect(() => {
     return () => {
-      geometry.dispose();
-      // Ensure we clean up active peak counts if unmounted early
-      if (phaseRef.current === 'hold') activePeakStrikes.current = Math.max(0, activePeakStrikes.current - 1);
-    };
-  }, [geometry]);
-
-  // Cinematic timings
-  const DRAW_TIME = 150; // ms
-  const HOLD_TIME = 100; // ms
-  const FADE_TIME = 350; // ms
-  const FLICKER_TIME = 150; // ms into fade
-
-  useFrame((state, delta) => {
-    if (!materialRef.current || !geometryRef.current) return;
-    
-    timeRef.current += delta * 1000;
-    const t = timeRef.current;
-    
-    if (phaseRef.current === 'drawing') {
-      const progress = Math.min(t / DRAW_TIME, 1);
-      const drawCount = Math.floor(progress * totalSegmentsRef.current) * 2;
-      geometryRef.current.geometry.setDrawRange(0, drawCount);
-      materialRef.current.opacity = 1;
-      
-      if (progress >= 1) {
-        phaseRef.current = 'hold';
-        timeRef.current = 0;
-        activePeakStrikes.current += 1;
-        
-        // Screen shake proportional to complexity
-        const shakeAmt = Math.min(totalSegmentsRef.current / 500, 1) * 0.3;
-        camera.position.x = (Math.random() - 0.5) * shakeAmt;
-        camera.position.y = (Math.random() - 0.5) * shakeAmt;
-      }
-    } 
-    else if (phaseRef.current === 'hold') {
-      materialRef.current.opacity = 1;
-      ambientFlashState.current = 0.05 * intensityBoost; // Trigger flash
-      
-      if (!hasPlayedAudio.current) {
-        hasPlayedAudio.current = true;
-        // Debounced dispatch
-        window.dispatchEvent(new CustomEvent('lightning-strike-audio'));
-      }
-      
-      if (t >= HOLD_TIME) {
-        phaseRef.current = 'fading';
-        timeRef.current = 0;
+      if (geomInstanceRef.current) geomInstanceRef.current.dispose();
+      if (phaseRef.current === 'hold') {
         activePeakStrikes.current = Math.max(0, activePeakStrikes.current - 1);
       }
-    } 
-    else if (phaseRef.current === 'fading') {
-      let progress = t / FADE_TIME;
-      let newOpacity = 1 - progress;
+    };
+  }, []);
+
+  const DRAW_TIME = 150; 
+  const HOLD_TIME = 100; 
+  const FADE_TIME = 350; 
+  const FLICKER_TIME = 150; 
+
+  useFrame((state, delta) => {
+    try {
+      if (!materialRef.current || !geometryRef.current) return; // Guard refs
       
-      // Flicker flash
-      if (t > FLICKER_TIME - 16 && t < FLICKER_TIME + 16) {
-        newOpacity = 0.4;
-      }
+      const geom = geometryRef.current.geometry;
+      if (!geom || !geom.attributes || !geom.attributes.position) return; // Guard geometry
       
-      if (newOpacity <= 0) {
-        materialRef.current.opacity = 0;
-        phaseRef.current = 'done';
-        onComplete();
-      } else {
-        materialRef.current.opacity = newOpacity;
+      if (!Number.isFinite(delta)) return; // Guard numeric
+      
+      timeRef.current += delta * 1000;
+      const t = timeRef.current;
+      
+      if (phaseRef.current === 'drawing') {
+        const progress = Math.min(t / DRAW_TIME, 1);
+        const drawCount = Math.floor(progress * totalSegmentsRef.current) * 2;
+        
+        geom.setDrawRange(0, drawCount);
+        materialRef.current.opacity = 1;
+        
+        if (progress >= 1) {
+          phaseRef.current = 'hold';
+          timeRef.current = 0;
+          activePeakStrikes.current += 1;
+          
+          const shakeAmt = Math.min(totalSegmentsRef.current / 500, 1) * 0.3;
+          if (camera && Number.isFinite(shakeAmt)) {
+             camera.position.x = (Math.random() - 0.5) * shakeAmt;
+             camera.position.y = (Math.random() - 0.5) * shakeAmt;
+          }
+        }
+      } 
+      else if (phaseRef.current === 'hold') {
+        materialRef.current.opacity = 1;
+        ambientFlashState.current = 0.05 * intensityBoost; 
+        
+        if (!hasPlayedAudio.current) {
+          hasPlayedAudio.current = true;
+          window.dispatchEvent(new CustomEvent('lightning-strike-audio'));
+        }
+        
+        if (t >= HOLD_TIME) {
+          phaseRef.current = 'fading';
+          timeRef.current = 0;
+          activePeakStrikes.current = Math.max(0, activePeakStrikes.current - 1);
+        }
+      } 
+      else if (phaseRef.current === 'fading') {
+        let progress = t / FADE_TIME;
+        let newOpacity = 1 - progress;
+        
+        if (t > FLICKER_TIME - 16 && t < FLICKER_TIME + 16) {
+          newOpacity = 0.4;
+        }
+        
+        if (newOpacity <= 0) {
+          materialRef.current.opacity = 0;
+          if (!isCompleteRef.current) {
+            isCompleteRef.current = true; // Lock onComplete
+            phaseRef.current = 'done';
+            onComplete(); 
+          }
+        } else {
+          materialRef.current.opacity = newOpacity;
+        }
       }
+    } catch (err) {
+      console.error("Crash source Bolt:", { message: err.message, stack: err.stack });
     }
   });
 
@@ -245,70 +315,30 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
   );
 };
 
-// Dynamic bloom manager to pulse intensity when strikes hold
-const BloomController = () => {
-  const bloomRef = useRef();
-  
-  useFrame(() => {
-    if (bloomRef.current) {
-      const effect = bloomRef.current;
-      const targetIntensity = activePeakStrikes.current > 0 ? 4.5 : 2.0;
-      
-      // Some versions of postprocessing use intensity, some use blendMode.opacity.value
-      if (effect.intensity !== undefined && !isNaN(effect.intensity)) {
-        effect.intensity += (targetIntensity - effect.intensity) * 0.2;
-      } else if (effect.blendMode && effect.blendMode.opacity) {
-        effect.blendMode.opacity.value += (targetIntensity - effect.blendMode.opacity.value) * 0.2;
-      }
-    }
-  });
-
-  return (
-    <EffectComposer>
-      <Bloom 
-        ref={bloomRef}
-        luminanceThreshold={0.4} 
-        luminanceSmoothing={0.9} 
-        intensity={2.0} 
-        mipmapBlur 
-      />
-    </EffectComposer>
-  );
-};
-
-const BoltManager = () => {
+const LightningRenderer = () => {
   const [bolts, setBolts] = useState([]);
   const [colorHex, setColorHex] = useState('#d4967a');
   const [isLightMode, setIsLightMode] = useState(false);
-  
-  const nextSpawnTime = useRef(0);
   const boltIdCounter = useRef(0);
 
-  // Update colors robustly when theme changes
   useEffect(() => {
     const updateColors = () => {
-      // Create a temp element to resolve the actual RGB value of the CSS variable
       const tempDiv = document.createElement('div');
       tempDiv.style.color = 'var(--acc)';
       document.body.appendChild(tempDiv);
-      const computedColor = getComputedStyle(tempDiv).color; // returns "rgb(r, g, b)"
+      const computedColor = getComputedStyle(tempDiv).color; 
       document.body.removeChild(tempDiv);
       
-      if (computedColor) {
-        setColorHex(computedColor);
-      }
+      if (computedColor) setColorHex(computedColor);
       
       const theme = document.documentElement.getAttribute('data-theme');
       setIsLightMode(theme === 'light');
     };
     
     updateColors();
-    
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-theme') {
-          updateColors();
-        }
+        if (mutation.attributeName === 'data-theme') updateColors();
       });
     });
     
@@ -316,7 +346,6 @@ const BoltManager = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Bolt spawner effect outside of render loop
   useEffect(() => {
     let spawnTimer;
     let doubleStrikeTimer;
@@ -332,7 +361,6 @@ const BoltManager = () => {
         
         const newBolts = [...prev, boltIdCounter.current++];
         
-        // 15% chance of double strike
         if (Math.random() < 0.15 && prev.length === 0) {
           doubleStrikeTimer = setTimeout(() => {
             setBolts(p => p.length < 2 ? [...p, boltIdCounter.current++] : p);
@@ -341,23 +369,15 @@ const BoltManager = () => {
         
         return newBolts;
       });
-      
       scheduleNext();
     };
 
-    // Initial spawn
     spawnTimer = setTimeout(spawnBolt, 1000 + Math.random() * 2000);
-
     return () => {
       clearTimeout(spawnTimer);
       clearTimeout(doubleStrikeTimer);
     };
   }, []);
-
-  useFrame((state) => {
-    // Recover camera from shake smoothly
-    state.camera.position.lerp(new THREE.Vector3(0, 0, 5), 0.1);
-  });
 
   const handleBoltComplete = useCallback((id) => {
     setBolts(prev => prev.filter(b => b !== id));
@@ -383,18 +403,23 @@ const AmbientFlash = () => {
   useEffect(() => {
     let animationFrame;
     const animate = () => {
-      if (overlayRef.current) {
+      try {
+        if (!overlayRef.current) return;
         const currentOpacity = parseFloat(overlayRef.current.style.opacity || 0);
         const targetOpacity = ambientFlashState.current;
-        // Fast decay
+        
         ambientFlashState.current *= 0.85; 
         
         if (currentOpacity > 0.001 || targetOpacity > 0.001) {
            const newOp = currentOpacity + (targetOpacity - currentOpacity) * 0.3;
-           overlayRef.current.style.opacity = newOp.toFixed(3);
+           if (Number.isFinite(newOp)) {
+              overlayRef.current.style.opacity = newOp.toFixed(3);
+           }
         } else {
            overlayRef.current.style.opacity = '0';
         }
+      } catch (err) {
+        console.error("Crash source AmbientFlash:", { message: err.message, stack: err.stack });
       }
       animationFrame = requestAnimationFrame(animate);
     };
@@ -416,6 +441,9 @@ const AmbientFlash = () => {
   );
 };
 
+// -------------------------------------------------------------
+// MAIN EXPORT
+// -------------------------------------------------------------
 const ThreeLightning = () => {
   return (
     <div 
@@ -425,8 +453,10 @@ const ThreeLightning = () => {
     >
       <AmbientFlash />
       <Canvas camera={{ position: [0, 0, 5], fov: 75 }} gl={{ alpha: true }}>
-        <BoltManager />
-        <BloomController />
+        <WebGLRecovery />
+        <LightningRenderer />
+        <PostFX />
+        <CameraRecovery />
       </Canvas>
     </div>
   );
