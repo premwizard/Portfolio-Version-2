@@ -189,8 +189,14 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
     
     const positions = new Float32Array(segments.length * 6);
     const colors = new Float32Array(segments.length * 6);
-    const baseColor = new THREE.Color(colorHex);
-    const emMult = 5.0 * intensityBoost; 
+    
+    // In light mode, use a deeper, richer color so it stands out against the light background
+    const actualColor = isLightMode ? '#5a1f00' : colorHex;
+    const baseColor = new THREE.Color(actualColor);
+    
+    // Dark mode needs high multiplier to glow and trigger bloom.
+    // Light mode must stay below 1.0 so it doesn't clamp to pure white!
+    const emMult = isLightMode ? 1.0 : (5.0 * intensityBoost);  
 
     segments.forEach((seg, i) => {
       positions[i*6]   = seg.p1.x; positions[i*6+1] = seg.p1.y; positions[i*6+2] = seg.p1.z;
@@ -309,7 +315,7 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
         transparent 
         opacity={1}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={isLightMode ? THREE.NormalBlending : THREE.AdditiveBlending}
       />
     </lineSegments>
   );
