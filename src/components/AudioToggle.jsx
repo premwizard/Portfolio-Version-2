@@ -76,13 +76,18 @@ const AudioToggle = () => {
     };
 
     const handleStrike = () => {
-      playThunder();
+      const now = performance.now();
+      // Debounce: don't play if we just played one less than 500ms ago
+      if (now - audioCtxRef.current.lastPlayTime > 500 || !audioCtxRef.current.lastPlayTime) {
+        audioCtxRef.current.lastPlayTime = now;
+        playThunder();
+      }
     };
 
-    window.addEventListener('lightning-strike', handleStrike);
+    window.addEventListener('lightning-strike-audio', handleStrike);
 
     return () => {
-      window.removeEventListener('lightning-strike', handleStrike);
+      window.removeEventListener('lightning-strike-audio', handleStrike);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close();
       }
