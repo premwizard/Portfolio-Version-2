@@ -100,12 +100,12 @@ const Hero = () => {
           loopTyping();
         }, 800); // Wait a bit before typing again
       } else {
-        currentText = isDeleting 
+        currentText = isDeleting
           ? fullText.slice(0, currentText.length - 1)
           : fullText.slice(0, currentText.length + 1);
-          
+
         setDisplayText(currentText);
-        
+
         const speed = isDeleting ? 75 : 150 + Math.random() * 100;
         timer = setTimeout(loopTyping, speed);
       }
@@ -154,7 +154,7 @@ const Hero = () => {
       </div>
 
       {/* 2. Mouse Glow Effect - Preserved as requested */}
-      <motion.div 
+      <motion.div
         className="pointer-events-none fixed inset-0 z-0 mix-blend-screen transition-opacity duration-300"
         animate={{
           background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, color-mix(in srgb, var(--acc) 4%, transparent), transparent 40%)`
@@ -169,7 +169,7 @@ const Hero = () => {
         {/* Content Wrapper */}
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left mt-8 lg:mt-0 pointer-events-auto max-w-2xl w-full shrink-0">
           <div className="w-full">
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
@@ -177,16 +177,16 @@ const Hero = () => {
             >
               Welcome to my world
             </motion.span>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
               className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl tracking-tight"
             >
-              <span className="text-transparent bg-gradient-to-br from-white via-neutral-200 to-neutral-500 bg-clip-text drop-shadow-sm">
+              <span className="text-[#E88A5B] drop-shadow-[0_0_15px_rgba(200,169,107,0.3)]">
                 {displayText}
               </span>
-              <span className="animate-pulse text-[#FF9A5A]">|</span>
+              <span className="animate-pulse text-[#E88A5B] ml-1">|</span>
             </motion.h1>
           </div>
 
@@ -213,7 +213,7 @@ const Hero = () => {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={ROLES[roleIndex]}
-                  className="whitespace-nowrap font-medium text-white"
+                  className="whitespace-nowrap font-medium text-[#C8A96B]"
                   style={{
                     position: 'relative',
                     display: 'inline-block',
@@ -249,7 +249,7 @@ const Hero = () => {
                 />
               </span>
             </MagneticButton>
-            
+
             <MagneticButton
               href="#contact"
               className="flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 transition-all duration-300 sm:w-auto bg-white/5 backdrop-blur-md hover:bg-white/10"
