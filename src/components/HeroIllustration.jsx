@@ -123,9 +123,9 @@ const ParticleNetwork = () => {
 // --- GLOWING ORBS BACKGROUND ---
 const GlowingOrbs = () => {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[2.5rem] z-0">
+    <div className="absolute inset-0 pointer-events-none z-0">
       <motion.div 
-        className="absolute w-[400px] h-[400px] bg-[#FF9A5A]/20 rounded-full blur-[100px] mix-blend-screen"
+        className="absolute w-[400px] h-[400px] bg-[#FF9A5A]/20 rounded-full blur-[100px]"
         animate={{
           x: [0, 80, -40, 0],
           y: [0, -60, 50, 0],
@@ -135,7 +135,7 @@ const GlowingOrbs = () => {
         style={{ top: '0%', left: '10%' }}
       />
       <motion.div 
-        className="absolute w-[350px] h-[350px] bg-[#FF7034]/15 rounded-full blur-[100px] mix-blend-screen"
+        className="absolute w-[350px] h-[350px] bg-[#FF7034]/15 rounded-full blur-[100px]"
         animate={{
           x: [0, -70, 60, 0],
           y: [0, 50, -40, 0],
@@ -151,22 +151,19 @@ const GlowingOrbs = () => {
 // --- EXPORTED COMPONENT ---
 const HeroIllustration = () => {
   return (
-    <div className="relative w-full aspect-square flex items-center justify-center max-w-[600px] mx-auto">
-      <div className="relative z-10 w-full h-full">
+    <div className="relative w-full aspect-square flex items-center justify-center max-w-[800px] mx-auto pointer-events-none">
+      <div 
+        className="relative z-10 w-full h-full"
+        style={{ 
+          maskImage: 'radial-gradient(circle at center, black 40%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 75%)'
+        }}
+      >
         {/* Soft floating blurred gradient orbs */}
         <GlowingOrbs />
 
         {/* Neural Network HTML5 Canvas */}
         <ParticleNetwork />
-
-        {/* Deep atmospheric gradients so the container blends entirely into the dark theme */}
-        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-t from-background via-transparent to-transparent opacity-90 pointer-events-none z-20" />
-        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-b from-background via-transparent to-transparent opacity-60 pointer-events-none z-20" />
-        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-r from-background via-transparent to-transparent opacity-80 pointer-events-none z-20" />
-        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-l from-background via-transparent to-transparent opacity-80 pointer-events-none z-20" />
-        
-        {/* Extra central radial gradient to completely obscure any sharp edges */}
-        <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none z-20" style={{ background: 'radial-gradient(circle, transparent 40%, var(--background) 100%)' }} />
       </div>
     </div>
   );

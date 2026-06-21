@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
 
-const BuilderUniverse = lazy(() => import('./hero3d/BuilderUniverse'));
 import HeroIllustration from './HeroIllustration';
 
 const ROLES = [
@@ -11,12 +10,78 @@ const ROLES = [
   'UI/UX Designer',
 ];
 
+const MagneticButton = ({ children, className, href, style }) => {
+  const ref = useRef(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e) => {
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
+    const middleX = clientX - (left + width / 2);
+    const middleY = clientY - (top + height / 2);
+    setPosition({ x: middleX * 0.25, y: middleY * 0.25 });
+  };
+
+  const reset = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.a
+      href={href}
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      className={className}
+      style={style}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {children}
+    </motion.a>
+  );
+};
+
+const MicroParticles = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#FF9A5A] shadow-[0_0_8px_rgba(255,154,90,0.8)]"
+          style={{
+            width: Math.random() * 2 + 1 + 'px',
+            height: Math.random() * 2 + 1 + 'px',
+            left: `${50 + Math.random() * 50}%`, // Mostly right side
+            top: `${Math.random() * 100}%`,
+            opacity: Math.random() * 0.5 + 0.1
+          }}
+          animate={{
+            y: [0, -100 - Math.random() * 100],
+            x: [0, (Math.random() - 0.5) * 50],
+            opacity: [0, Math.random() * 0.5 + 0.2, 0]
+          }}
+          transition={{
+            duration: 5 + Math.random() * 5,
+            repeat: Infinity,
+            ease: "linear",
+            delay: Math.random() * 5
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
   const fullText = 'PREM M';
   const [roleIndex, setRoleIndex] = useState(0);
   const [scrollIndicatorVisible, setScrollIndicatorVisible] = useState(true);
   const sectionRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
 
   useEffect(() => {
     let currentText = '';
@@ -71,51 +136,68 @@ const Hero = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const handleMouseMove = (e) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
+
   return (
     <section
       ref={sectionRef}
       id="home"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pb-24 pt-20"
+      onMouseMove={handleMouseMove}
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pb-24 pt-20 transition-colors duration-300"
     >
-      {/* Decorative Blur Backgrounds */}
-      <div className="pointer-events-none absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-primary/10 blur-[120px] transition-colors duration-300" />
-      <div className="pointer-events-none absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-secondary/10 blur-[120px] transition-colors duration-300" />
-
-      {/* Full Screen Cinematic 3D Background */}
-      <div className="absolute inset-0 z-0">
-        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-primary tracking-widest uppercase text-sm animate-pulse">Initializing Environment...</div>}>
-          <BuilderUniverse />
-        </Suspense>
+      {/* Ambient background glows inherited and enhanced */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* Soft orange glow on right side - Theme adaptive */}
+        <div className="absolute top-0 right-0 h-full w-[60%] bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-[var(--acc)]/15 via-[var(--acc)]/5 to-transparent blur-[80px] transition-colors duration-300" />
       </div>
+
+      {/* 2. Mouse Glow Effect - Preserved as requested */}
+      <motion.div 
+        className="pointer-events-none fixed inset-0 z-0 mix-blend-screen transition-opacity duration-300"
+        animate={{
+          background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, color-mix(in srgb, var(--acc) 4%, transparent), transparent 40%)`
+        }}
+      />
+
+      {/* Note: The main background color, noise texture, and micro particles 
+          are now seamlessly inherited from the global App.jsx theme (ParticleBackground and .noise-bg),
+          matching the About Me section exactly in both Light and Dark mode. */}
 
       <div className="relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between min-h-[80vh] pointer-events-none gap-8">
         {/* Content Wrapper */}
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left mt-8 lg:mt-0 pointer-events-auto max-w-2xl w-full shrink-0">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="w-full"
-          >
-            <span className="mb-4 block text-xs font-medium uppercase tracking-widest text-primary sm:text-sm">
+          <div className="w-full">
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              className="mb-4 block text-xs font-semibold uppercase tracking-[0.3em] text-[#FF9A5A] sm:text-sm"
+            >
               Welcome to my world
-            </span>
-            <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              <span className="text-transparent bg-gradient-to-r from-primary via-warm to-platinum bg-clip-text text-glow drop-shadow-2xl">
+            </motion.span>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl tracking-tight"
+            >
+              <span className="text-transparent bg-gradient-to-br from-white via-neutral-200 to-neutral-500 bg-clip-text drop-shadow-sm">
                 {displayText}
               </span>
-              <span className="animate-pulse text-primary">|</span>
-            </h1>
-          </motion.div>
+              <span className="animate-pulse text-[#FF9A5A]">|</span>
+            </motion.h1>
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-10 flex flex-nowrap items-center justify-center lg:justify-start gap-2 text-lg font-light md:text-xl transition-colors duration-300 w-full"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="mb-10 flex flex-nowrap items-center justify-center lg:justify-start gap-3 text-lg font-light md:text-xl text-neutral-400 transition-colors duration-300 w-full"
             style={{ lineHeight: 1 }}
           >
-            <span className="shrink-0" style={{ lineHeight: 1, color: 'var(--txs)' }}>
+            <span className="shrink-0" style={{ lineHeight: 1 }}>
               I am a
             </span>
             <span
@@ -131,18 +213,16 @@ const Hero = () => {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={ROLES[roleIndex]}
-                  className="whitespace-nowrap font-medium"
+                  className="whitespace-nowrap font-medium text-white"
                   style={{
                     position: 'relative',
                     display: 'inline-block',
-                    color: 'var(--acc)',
                     lineHeight: 1,
-                    transition: 'color 0.3s ease',
                   }}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {ROLES[roleIndex]}
                 </motion.span>
@@ -150,15 +230,16 @@ const Hero = () => {
             </span>
           </motion.div>
 
+          {/* 6. Button Hover Enhancement (Magnetic) */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
             className="flex flex-col w-full sm:w-auto items-center justify-center lg:justify-start gap-4 sm:flex-row sm:gap-6"
           >
-            <a
+            <MagneticButton
               href="#projects"
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-8 py-4 font-semibold text-background transition-all duration-300 hover:shadow-[0_0_30px_var(--border2)] sm:w-auto"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#FF9A5A] px-8 py-4 font-semibold text-[#050505] transition-all duration-300 shadow-[0_0_20px_rgba(255,154,90,0.3)] hover:shadow-[0_0_35px_rgba(255,154,90,0.5)] sm:w-auto"
             >
               <span className="relative z-10 flex items-center gap-2">
                 View Projects{' '}
@@ -167,30 +248,22 @@ const Hero = () => {
                   className="transition-transform group-hover:translate-x-1"
                 />
               </span>
-            </a>
-            <a
+            </MagneticButton>
+            
+            <MagneticButton
               href="#contact"
-              className="flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 transition-all duration-300 sm:w-auto bg-surface/30 backdrop-blur-md"
+              className="flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 transition-all duration-300 sm:w-auto bg-white/5 backdrop-blur-md hover:bg-white/10"
               style={{
-                borderColor: 'var(--border)',
-                border: '1px solid var(--border)',
-                color: 'var(--tx)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--acc)';
-                e.currentTarget.style.color = 'var(--tx-on-acc)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--tx)';
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'white',
               }}
             >
               Contact Me <Download size={18} />
-            </a>
+            </MagneticButton>
           </motion.div>
         </div>
 
-        {/* 3D Animated Developer Illustration */}
+        {/* 7. Improve Right-Side Animation */}
         <div className="hidden lg:flex w-full flex-1 items-center justify-center pointer-events-auto">
           <HeroIllustration />
         </div>
@@ -200,12 +273,12 @@ const Hero = () => {
         className="pointer-events-none absolute bottom-10 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: scrollIndicatorVisible ? 1 : 0 }}
-        transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         aria-hidden
       >
         <span
           className="uppercase"
-          style={{ fontSize: 9, letterSpacing: '0.2em', color: 'var(--txm)', transition: 'color 0.3s ease' }}
+          style={{ fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', transition: 'color 0.3s ease' }}
         >
           SCROLL
         </span>
@@ -213,12 +286,12 @@ const Hero = () => {
           className="relative mx-auto w-px overflow-visible transition-colors duration-300"
           style={{
             height: 40,
-            backgroundColor: `color-mix(in srgb, var(--acc) 30%, transparent)`,
+            backgroundColor: `rgba(255,154,90,0.2)`,
           }}
         >
           <motion.div
-            className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: 'var(--color-primary)' }}
+            className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full transition-colors duration-300 shadow-[0_0_10px_rgba(255,154,90,0.8)]"
+            style={{ backgroundColor: '#FF9A5A' }}
             animate={{ y: [2, 30, 2] }}
             transition={{
               duration: 1.5,
