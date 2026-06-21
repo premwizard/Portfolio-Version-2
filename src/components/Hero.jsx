@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
 
 const BuilderUniverse = lazy(() => import('./hero3d/BuilderUniverse'));
+import HeroIllustration from './HeroIllustration';
 
 const ROLES = [
   'AI Product Engineer',
@@ -87,9 +88,9 @@ const Hero = () => {
         </Suspense>
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl flex flex-col justify-center min-h-[80vh] pointer-events-none">
+      <div className="relative z-10 mx-auto w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between min-h-[80vh] pointer-events-none gap-8">
         {/* Content Wrapper */}
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left mt-8 lg:mt-0 pointer-events-auto max-w-2xl">
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left mt-8 lg:mt-0 pointer-events-auto max-w-2xl w-full shrink-0">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -187,6 +188,11 @@ const Hero = () => {
               Contact Me <Download size={18} />
             </a>
           </motion.div>
+        </div>
+
+        {/* 3D Animated Developer Illustration */}
+        <div className="hidden lg:flex w-full flex-1 items-center justify-center pointer-events-auto">
+          <HeroIllustration />
         </div>
       </div>
 

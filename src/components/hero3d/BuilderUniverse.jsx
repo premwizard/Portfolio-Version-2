@@ -1,8 +1,7 @@
-import React, { Suspense, useRef } from 'react';
+import React, { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 
-import CoreOrb from './CoreOrb';
 import Lighting from './Lighting';
 import Effects from './Effects';
 
@@ -25,6 +24,29 @@ const ParallaxGroup = ({ children }) => {
 };
 
 const BuilderUniverse = () => {
+  const [isLightMode, setIsLightMode] = useState(false);
+
+  useEffect(() => {
+    // Initial check
+    const theme = document.documentElement.getAttribute('data-theme');
+    setIsLightMode(theme === 'light');
+
+    // Observe future changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          setIsLightMode(currentTheme === 'light');
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
+  const bgColor = isLightMode ? '#f0ece8' : '#080507';
+
   return (
     <div className="w-full h-full min-h-screen relative">
       <Canvas
@@ -33,8 +55,8 @@ const BuilderUniverse = () => {
         dpr={[1, 2]} // Cap pixel ratio for performance
       >
         {/* Layer 1: Cinematic Background & Fog */}
-        <color attach="background" args={['#080507']} />
-        <fog attach="fog" args={['#080507', 10, 30]} />
+        <color attach="background" args={[bgColor]} />
+        <fog attach="fog" args={[bgColor, 10, 30]} />
 
         <Suspense fallback={null}>
           <Lighting />
@@ -46,7 +68,7 @@ const BuilderUniverse = () => {
               floatIntensity={0.5} 
               floatingRange={[-0.2, 0.2]}
             >
-              <CoreOrb />
+             
             </Float>
           </ParallaxGroup>
           
