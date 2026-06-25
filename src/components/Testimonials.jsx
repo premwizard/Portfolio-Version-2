@@ -42,6 +42,7 @@ const Testimonials = () => {
   };
 
   useEffect(() => {
+    if (testimonials.length <= 1) return;
     const timer = setInterval(() => {
       handleNext();
     }, 5000);
@@ -129,51 +130,53 @@ const Testimonials = () => {
       </div>
 
       {/* Infinite Testimonial Carousel Console */}
-      <div className="mb-24 w-full overflow-hidden relative marquee-container" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
-        <div className="flex w-max marquee-content py-4">
-          {[...Array(2)].map((_, listIndex) => (
-            <div key={listIndex} className="flex gap-4 md:gap-6 pr-4 md:pr-6">
-              {testimonials.map((testimonial, index) => (
-                <motion.div 
-                  key={`${testimonial.id}-${index}-${listIndex}`}
-                  onClick={() => handleDotClick(index)}
-                  whileHover={{ scale: 1.02 }}
-                  className={`w-[260px] md:w-[320px] p-5 rounded-2xl border transition-colors cursor-pointer flex flex-col shrink-0 select-none ${currentIndex === index ? 'border-[#d4967a] shadow-[0_0_15px_rgba(212,150,122,0.3)] bg-white/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
-                >
-                  <div className="flex gap-1 mb-3">
-                     {[...Array(testimonial.rating)].map((_, i) => (
-                       <FaStar key={i} style={{ color: 'var(--acc, #d4967a)' }} className="text-[10px] opacity-80" />
-                     ))}
-                  </div>
-                  <p className="text-sm opacity-80 line-clamp-3 mb-4 flex-grow">"{testimonial.feedback || testimonial.text}"</p>
-                  
-                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: currentIndex === index ? 'var(--acc, #d4967a)' : 'rgba(255,255,255,0.1)', color: currentIndex === index ? '#080507' : 'var(--acc, #d4967a)' }}>
-                      {getInitials(testimonial.name)}
+      {testimonials.length > 1 && (
+        <div className="mb-24 w-full overflow-hidden relative marquee-container" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
+          <div className="flex w-max marquee-content py-4">
+            {[...Array(2)].map((_, listIndex) => (
+              <div key={listIndex} className="flex gap-4 md:gap-6 pr-4 md:pr-6">
+                {testimonials.map((testimonial, index) => (
+                  <motion.div 
+                    key={`${testimonial.id}-${index}-${listIndex}`}
+                    onClick={() => handleDotClick(index)}
+                    whileHover={{ scale: 1.02 }}
+                    className={`w-[260px] md:w-[320px] p-5 rounded-2xl border transition-colors cursor-pointer flex flex-col shrink-0 select-none ${currentIndex === index ? 'border-[#d4967a] shadow-[0_0_15px_rgba(212,150,122,0.3)] bg-white/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                  >
+                    <div className="flex gap-1 mb-3">
+                       {[...Array(testimonial.rating)].map((_, i) => (
+                         <FaStar key={i} style={{ color: 'var(--acc, #d4967a)' }} className="text-[10px] opacity-80" />
+                       ))}
                     </div>
-                    <div>
-                      <h5 className="text-sm font-semibold" style={{ color: 'var(--pt, #b8ccd8)' }}>{testimonial.name}</h5>
-                      <p className="text-xs opacity-60 truncate max-w-[200px]">{testimonial.role} {testimonial.company && `• ${testimonial.company}`}</p>
+                    <p className="text-sm opacity-80 line-clamp-3 mb-4 flex-grow">"{testimonial.feedback || testimonial.text}"</p>
+                    
+                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: currentIndex === index ? 'var(--acc, #d4967a)' : 'rgba(255,255,255,0.1)', color: currentIndex === index ? '#080507' : 'var(--acc, #d4967a)' }}>
+                        {getInitials(testimonial.name)}
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-semibold" style={{ color: 'var(--pt, #b8ccd8)' }}>{testimonial.name}</h5>
+                        <p className="text-xs opacity-60 truncate max-w-[200px]">{testimonial.role} {testimonial.company && `• ${testimonial.company}`}</p>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ))}
+                  </motion.div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <style dangerouslySetInnerHTML={{__html: `
+            @keyframes marquee-scroll {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .marquee-content {
+              animation: marquee-scroll 40s linear infinite;
+            }
+            .marquee-container:hover .marquee-content {
+              animation-play-state: paused;
+            }
+          `}} />
         </div>
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes marquee-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .marquee-content {
-            animation: marquee-scroll 40s linear infinite;
-          }
-          .marquee-container:hover .marquee-content {
-            animation-play-state: paused;
-          }
-        `}} />
-      </div>
+      )}
 
       {/* Write Review Section */}
       <div className="max-w-3xl mx-auto flex justify-center mt-12">
