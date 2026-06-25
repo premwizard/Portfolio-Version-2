@@ -2,7 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { FaQuoteLeft, FaStar } from 'react-icons/fa';
+import { FaQuoteLeft, FaStar, FaLinkedin } from 'react-icons/fa';
+import Avatar from './Avatar';
+
+const formatLinkedinUrl = (url) => {
+  if (!url) return '';
+  let cleaned = url.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+    return cleaned;
+  }
+  if (cleaned.startsWith('linkedin.com') || cleaned.startsWith('www.linkedin.com')) {
+    return `https://${cleaned}`;
+  }
+  return `https://www.linkedin.com/in/${cleaned}`;
+};
 
 const Testimonials = () => {
   const navigate = useNavigate();
@@ -48,11 +61,6 @@ const Testimonials = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [currentIndex, testimonials]);
-
-  const getInitials = (name) => {
-    if (!name) return '';
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  };
 
   const currentTestimonial = testimonials[currentIndex];
 
@@ -117,13 +125,25 @@ const Testimonials = () => {
                  "{currentTestimonial?.feedback || currentTestimonial?.text}"
                </p>
 
-               <div className="flex flex-col items-center">
-                 <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4 shadow-lg border-2 border-transparent bg-gradient-to-tr from-[#d4967a] to-[#c8845e] text-[#080507]">
-                   {getInitials(currentTestimonial.name)}
-                 </div>
-                 <h4 className="text-xl font-bold" style={{ color: 'var(--pt, #b8ccd8)' }}>{currentTestimonial.name}</h4>
-                 <p className="text-sm opacity-70">{currentTestimonial.role} {currentTestimonial.company && `at ${currentTestimonial.company}`}</p>
-               </div>
+                <div className="flex flex-col items-center">
+                   <Avatar name={currentTestimonial.name} size="lg" />
+                   <div className="flex items-center gap-2">
+                     <h4 className="text-xl font-bold" style={{ color: 'var(--pt, #b8ccd8)' }}>{currentTestimonial.name}</h4>
+                     {currentTestimonial.linkedin && (
+                       <a 
+                         href={formatLinkedinUrl(currentTestimonial.linkedin)} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="transition-colors hover:scale-110 transform duration-200"
+                         style={{ color: 'var(--acc, #d4967a)' }}
+                         aria-label={`${currentTestimonial.name}'s LinkedIn`}
+                       >
+                         <FaLinkedin className="text-lg hover:text-white" />
+                       </a>
+                     )}
+                   </div>
+                  <p className="text-sm opacity-70 mt-1">{currentTestimonial.role} {currentTestimonial.company && `at ${currentTestimonial.company}`}</p>
+                </div>
              </motion.div>
            </AnimatePresence>
         </div>
@@ -148,16 +168,28 @@ const Testimonials = () => {
                        ))}
                     </div>
                     <p className="text-sm opacity-80 line-clamp-3 mb-4 flex-grow">"{testimonial.feedback || testimonial.text}"</p>
-                    
-                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: currentIndex === index ? 'var(--acc, #d4967a)' : 'rgba(255,255,255,0.1)', color: currentIndex === index ? '#080507' : 'var(--acc, #d4967a)' }}>
-                        {getInitials(testimonial.name)}
-                      </div>
-                      <div>
-                        <h5 className="text-sm font-semibold" style={{ color: 'var(--pt, #b8ccd8)' }}>{testimonial.name}</h5>
-                        <p className="text-xs opacity-60 truncate max-w-[200px]">{testimonial.role} {testimonial.company && `• ${testimonial.company}`}</p>
-                      </div>
-                    </div>
+                                        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+                       <Avatar name={testimonial.name} size="sm" isActive={currentIndex === index} />
+                       <div className="flex-grow min-w-0">
+                         <div className="flex items-center justify-between gap-2">
+                           <h5 className="text-sm font-semibold truncate" style={{ color: 'var(--pt, #b8ccd8)' }}>{testimonial.name}</h5>
+                           {testimonial.linkedin && (
+                             <a 
+                               href={formatLinkedinUrl(testimonial.linkedin)} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               className="transition-colors shrink-0 hover:scale-110 transform duration-200"
+                               style={{ color: 'var(--acc, #d4967a)' }}
+                               onClick={(e) => e.stopPropagation()}
+                               aria-label={`${testimonial.name}'s LinkedIn`}
+                             >
+                               <FaLinkedin className="text-sm hover:text-white" />
+                             </a>
+                           )}
+                         </div>
+                         <p className="text-xs opacity-60 truncate max-w-[200px]">{testimonial.role} {testimonial.company && `• ${testimonial.company}`}</p>
+                       </div>
+                     </div>
                   </motion.div>
                 ))}
               </div>
