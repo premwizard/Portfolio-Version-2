@@ -5,19 +5,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 const experienceData = [
   {
     id: 1,
-    title: 'Full Stack Developer Intern',
-    organization: 'Zidio Development',
+    title: 'AI Engineer Intern',
+    organization: 'ECLearnix Edtech Private Limited',
     duration: 'Apr 2026 – Present',
-    description: 'Developing and maintaining modern web applications with a focus on performance, responsiveness, and clean user experience. Contributing to real-world projects using current web technologies.',
+    description: 'Contributed to the development of 4 AI-driven applications and intelligent systems using Python, Machine Learning, DeepLearning, and Generative AI technologies. Worked on projects including an MCP-based AI agent system, a Text-to-Design AI platform, an AI-powered UI/UX automation tool, and an intelligent workflow automation system. Implemented LLM integrations, prompt engineering pipelines, backend modules, and AI-driven automation workflows to enhance system efficiency and user experience. Collaborated in an offline development environment to build scalable and production-ready AI solutions.',
     isCurrent: true,
   },
   {
     id: 2,
     title: 'Web Development Intern (Online)',
     organization: 'Zidio Development',
-    duration: 'Mar 2026 – Present',
+    duration: 'Mar 2026 – May 2026',
     description: 'Developing and maintaining modern web applications with a focus on performance, responsiveness, and clean user experience. Contributing to real-world projects using current web technologies.',
-    isCurrent: true,
+    isCurrent: false,
   },
   {
     id: 3,

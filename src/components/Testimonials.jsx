@@ -151,10 +151,10 @@ const Testimonials = () => {
 
       {/* Infinite Testimonial Carousel Console */}
       {testimonials.length > 1 && (
-        <div className="mb-24 w-full overflow-hidden relative marquee-container" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
-          <div className="flex w-max marquee-content py-4">
-            {[...Array(2)].map((_, listIndex) => (
-              <div key={listIndex} className="flex gap-4 md:gap-6 pr-4 md:pr-6">
+        <div className="mb-24 w-full overflow-hidden relative marquee-container" style={testimonials.length > 3 ? { maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' } : {}}>
+          <div className={`flex py-4 ${testimonials.length > 3 ? 'w-max marquee-content' : 'w-full justify-center flex-wrap gap-4 md:gap-6'}`}>
+            {[...Array(testimonials.length > 3 ? 2 : 1)].map((_, listIndex) => (
+              <div key={listIndex} className={`flex gap-4 md:gap-6 ${testimonials.length > 3 ? 'pr-4 md:pr-6' : ''}`}>
                 {testimonials.map((testimonial, index) => (
                   <motion.div 
                     key={`${testimonial.id}-${index}-${listIndex}`}
