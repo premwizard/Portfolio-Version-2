@@ -184,15 +184,17 @@ const NavigationButtons = ({ currentChapter, totalChapters, onPrev, onNext }) =>
 
 /* ───────────────────  DOWNLOAD RESUME BUTTON  ───────────── */
 const DownloadResumeButton = () => (
-  <motion.button
-    className="group relative px-8 py-4 bg-gradient-to-r from-primary to-warm border border-primary/50 rounded-lg text-background font-semibold hover:shadow-xl hover:shadow-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background transition-all duration-500 overflow-hidden"
+  <motion.a
+    href="/resume.pdf"
+    download="Prem_M_Resume.pdf"
+    className="group relative inline-block px-8 py-4 bg-gradient-to-r from-primary to-warm border border-primary/50 rounded-lg text-background font-semibold hover:shadow-xl hover:shadow-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background transition-all duration-500 overflow-hidden"
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
   >
     <span className="font-serif italic relative z-10">Download Resume</span>
     <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-warm to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-transparent to-warm/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-  </motion.button>
+  </motion.a>
 );
 
 /* ═══════════════════  MAIN JOURNEY SECTION  ═════════════════ */
