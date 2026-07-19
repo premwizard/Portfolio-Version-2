@@ -14,15 +14,17 @@ import Certificates from './components/Certificates';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Testimonials from './components/Testimonials';
-import ParticleBackground from './components/ParticleBackground';
-import ThreeLightning from './components/effects/ThreeLightning';
-import AudioToggle from './components/AudioToggle';
-import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
 
+// Lazy loaded heavy components
+const ParticleBackground = React.lazy(() => import('./components/ParticleBackground'));
+const ThreeLightning = React.lazy(() => import('./components/effects/ThreeLightning'));
+const AudioToggle = React.lazy(() => import('./components/AudioToggle'));
+const CustomCursor = React.lazy(() => import('./components/CustomCursor'));
+
 // Pages
-import Review from './pages/Review';
-import AdminTestimonials from './pages/AdminTestimonials';
+const Review = React.lazy(() => import('./pages/Review'));
+const AdminTestimonials = React.lazy(() => import('./pages/AdminTestimonials'));
 
 // Utils
 import { incrementVisitorCount } from './utils/visitorCounter';
@@ -132,11 +134,12 @@ function App() {
     <div className="min-h-screen bg-background text-platinum relative selection:bg-primary/30 transition-colors duration-300"
       style={{ selectionBackgroundColor: 'var(--color-primary)', selectionColor: '#b8ccd8' }}
     >
-      <CustomCursor />
-      <div className="noise-bg"></div>
-      <ParticleBackground />
-      <ThreeLightning />
-      <AudioToggle />
+      <React.Suspense fallback={null}>
+        <CustomCursor />
+        <ParticleBackground />
+        <ThreeLightning />
+        <AudioToggle />
+      </React.Suspense>
 
       <AnimatePresence mode="wait">
         {isLoading ? (
@@ -153,11 +156,13 @@ function App() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
           >
-            <Routes>
-              <Route path="/" element={<Portfolio visitorCount={visitorCount} />} />
-              <Route path="/review" element={<Review />} />
-              <Route path="/admin/testimonials" element={<AdminTestimonials />} />
-            </Routes>
+            <React.Suspense fallback={<LoadingScreen isLoading={true} />}>
+              <Routes>
+                <Route path="/" element={<Portfolio visitorCount={visitorCount} />} />
+                <Route path="/review" element={<Review />} />
+                <Route path="/admin/testimonials" element={<AdminTestimonials />} />
+              </Routes>
+            </React.Suspense>
             <ToastContainer theme="dark" position="bottom-right" />
           </motion.div>
         )}
