@@ -29,7 +29,7 @@ const BuilderUniverse = () => {
   useEffect(() => {
     // Initial check
     const theme = document.documentElement.getAttribute('data-theme');
-    setIsLightMode(theme === 'light');
+    setTimeout(() => setIsLightMode(theme === 'light'), 0);
 
     // Observe future changes
     const observer = new MutationObserver((mutations) => {

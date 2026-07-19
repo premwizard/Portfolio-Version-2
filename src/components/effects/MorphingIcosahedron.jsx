@@ -77,7 +77,6 @@ const simplex3 = (xin, yin, zin) => {
 // --------------------------------------------------------
 const IcosahedronShape = ({ colorPrimary, colorSecondary, isMobile }) => {
   const meshRef = useRef();
-  const { size } = useThree();
   
   // Base geometry (only created once)
   const detail = isMobile ? 1 : 2;
@@ -120,7 +119,7 @@ const IcosahedronShape = ({ colorPrimary, colorSecondary, isMobile }) => {
   }, []);
 
   // Animation Loop
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!baseGeometry || !meshRef.current) return;
     
     const time = state.clock.elapsedTime * 0.3; // speed of morphing
@@ -156,6 +155,7 @@ const IcosahedronShape = ({ colorPrimary, colorSecondary, isMobile }) => {
       positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
     }
     
+    // eslint-disable-next-line react-hooks/immutability
     positionAttribute.needsUpdate = true;
     baseGeometry.computeVertexNormals();
     baseGeometry.computeBoundingSphere(); // Prevent frustum culling crashes

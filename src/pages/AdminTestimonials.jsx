@@ -53,7 +53,7 @@ const AdminTestimonials = () => {
 
       toast.success(`Testimonial marked as ${newStatus}`);
       setTestimonials(testimonials.map(t => t.id === id ? { ...t, status: newStatus } : t));
-    } catch (error) {
+    } catch {
       toast.error(`Failed to update status`);
     }
   };
@@ -70,7 +70,7 @@ const AdminTestimonials = () => {
 
         toast.success('Testimonial deleted');
         setTestimonials(testimonials.filter(t => t.id !== id));
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete testimonial');
       }
     }

@@ -47,7 +47,6 @@ function updateScrollProgress(setter) {
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const ratiosRef = useRef(new Map());
 
@@ -56,7 +55,6 @@ const Navbar = () => {
   useEffect(() => {
     const onScroll = () => {
       updateScrollProgress(setScrollProgress);
-      setScrolled(window.scrollY > 10);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });

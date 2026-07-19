@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
 
@@ -45,30 +45,32 @@ const MagneticButton = ({ children, className, href, style }) => {
 };
 
 const MicroParticles = () => {
+  const particles = React.useMemo(() => {
+    /* eslint-disable react-hooks/purity */
+    return [...Array(20)].map(() => ({
+      width: Math.random() * 2 + 1 + 'px',
+      height: Math.random() * 2 + 1 + 'px',
+      left: `${50 + Math.random() * 50}%`,
+      top: `${Math.random() * 100}%`,
+      opacity: Math.random() * 0.5 + 0.1,
+      animY: [0, -100 - Math.random() * 100],
+      animX: [0, (Math.random() - 0.5) * 50],
+      animOpacity: [0, Math.random() * 0.5 + 0.2, 0],
+      duration: 5 + Math.random() * 5,
+      delay: Math.random() * 5
+    }));
+    /* eslint-enable react-hooks/purity */
+  }, []);
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((p, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full bg-[#FF9A5A] shadow-[0_0_8px_rgba(255,154,90,0.8)]"
-          style={{
-            width: Math.random() * 2 + 1 + 'px',
-            height: Math.random() * 2 + 1 + 'px',
-            left: `${50 + Math.random() * 50}%`, // Mostly right side
-            top: `${Math.random() * 100}%`,
-            opacity: Math.random() * 0.5 + 0.1
-          }}
-          animate={{
-            y: [0, -100 - Math.random() * 100],
-            x: [0, (Math.random() - 0.5) * 50],
-            opacity: [0, Math.random() * 0.5 + 0.2, 0]
-          }}
-          transition={{
-            duration: 5 + Math.random() * 5,
-            repeat: Infinity,
-            ease: "linear",
-            delay: Math.random() * 5
-          }}
+          style={{ width: p.width, height: p.height, left: p.left, top: p.top, opacity: p.opacity }}
+          animate={{ y: p.animY, x: p.animX, opacity: p.animOpacity }}
+          transition={{ duration: p.duration, repeat: Infinity, ease: "linear", delay: p.delay }}
         />
       ))}
     </div>

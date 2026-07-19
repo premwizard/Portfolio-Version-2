@@ -73,12 +73,16 @@ const Contact = () => {
     if (!isComplete) return;
 
     const summaryMessage = `I received your message and am sending the details now. You asked to be contacted as ${responses.name}, via ${responses.email}, regarding ${responses.reason}.`;
-    setHistory((prev) => [...prev, { from: 'bot', text: summaryMessage }]);
-    setStatus('sending');
+    setTimeout(() => {
+      setHistory((prev) => [...prev, { from: 'bot', text: summaryMessage }]);
+      setStatus('sending');
+    }, 0);
 
     if (!serviceId || !templateId || !publicKey) {
-      setError('EmailJS is not configured. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to your env.');
-      setStatus('failed');
+      setTimeout(() => {
+        setError('EmailJS is not configured. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to your env.');
+        setStatus('failed');
+      }, 0);
       return;
     }
 

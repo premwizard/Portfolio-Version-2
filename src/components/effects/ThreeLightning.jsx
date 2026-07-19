@@ -173,12 +173,16 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
     const isMobile = window.innerWidth < 768;
     const maxGen = isMobile ? 1 : 2; 
     
+    // eslint-disable-next-line react-hooks/purity
     const startX = (Math.random() - 0.5) * viewport.width * 1.2;
     const startY = viewport.height / 2 + 2; 
+    // eslint-disable-next-line react-hooks/purity
     const startZ = (Math.random() - 0.5) * 5;
 
+    // eslint-disable-next-line react-hooks/purity
     const endX = startX + (Math.random() - 0.5) * viewport.width * 0.8;
     const endY = -viewport.height / 2 - 2;
+    // eslint-disable-next-line react-hooks/purity
     const endZ = (Math.random() - 0.5) * 5;
     
     const start = new THREE.Vector3(startX, startY, startZ);
@@ -263,6 +267,7 @@ const Bolt = ({ onComplete, colorHex, isLightMode }) => {
           
           const shakeAmt = Math.min(totalSegmentsRef.current / 500, 1) * 0.3;
           if (camera && Number.isFinite(shakeAmt)) {
+             // eslint-disable-next-line react-hooks/immutability
              camera.position.x = (Math.random() - 0.5) * shakeAmt;
              camera.position.y = (Math.random() - 0.5) * shakeAmt;
           }

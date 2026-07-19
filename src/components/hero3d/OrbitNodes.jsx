@@ -17,6 +17,7 @@ const OrbitNode = ({ data }) => {
   const sphereRef = useRef();
   
   // Randomize initial vertical offset for a more 3D orbit feel
+  // eslint-disable-next-line react-hooks/purity
   const yOffset = useMemo(() => (Math.random() - 0.5) * 2, []);
 
   useFrame((state) => {
