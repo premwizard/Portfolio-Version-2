@@ -86,7 +86,7 @@ const BookPage = ({ title, items, isLeft, currentPage }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 space-y-6 overflow-y-auto">
+        <div className="flex-1 space-y-6">
           {items.map((item, index) => (
             <motion.div
               key={item.id}
@@ -254,7 +254,7 @@ const Journey = () => {
         <div className="relative max-w-6xl mx-auto">
           <motion.div
             className="relative z-10 shadow-2xl shadow-primary/20 rounded-2xl overflow-hidden md:shadow-2xl md:shadow-primary/20 md:rounded-2xl md:overflow-hidden"
-            style={{ height: 'auto', minHeight: '600px' }}
+            style={{ height: 'auto' }}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -342,7 +342,7 @@ const Journey = () => {
             </div>
 
             {/* Desktop: Book layout */}
-            <div className="hidden md:flex w-full" style={{ height: '600px' }}>
+            <div className="hidden md:flex w-full items-stretch transition-all duration-500">
               {/* Left page - Experience */}
               <div className="flex-1 relative">
                 <AnimatePresence mode="wait">
